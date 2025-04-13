@@ -5,7 +5,7 @@ import {
     StyleSheet,
     TouchableOpacity
 } from 'react-native';
-import colors from '../../theme/const';
+import colors from '../../const/colors';
 
 interface StatsTipsTabProps {
     activeTab: string;

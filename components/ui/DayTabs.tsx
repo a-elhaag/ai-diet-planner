@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     Platform,
 } from 'react-native';
-import colors from '../../theme/const';
+import colors from '../../const/colors';
+import generalConst from '../../const/const';
 
 interface DayTabsProps {
     days: string[];
@@ -63,7 +64,7 @@ const DayTabs: React.FC<DayTabsProps> = ({
                                         style={[styles.freeDayLabel, isSelected && styles.selectedFreeDayLabel]}
                                         numberOfLines={1}
                                     >
-                                        Free 🎉
+                                        Free
                                     </Text>
                                 )}
                             </View>
@@ -78,7 +79,7 @@ const DayTabs: React.FC<DayTabsProps> = ({
 const styles = StyleSheet.create({
     container: {
         marginTop: 12,
-        marginBottom: 24,
+        marginBottom: 12,
         paddingHorizontal: 12,
     },
     scrollContent: {
@@ -86,11 +87,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     dayTab: {
-        width: 70, // Fixed width
-        height: 70, // Fixed height
+        width: 90, // Fixed width
+        height: 60,
         marginHorizontal: 5,
-        backgroundColor: '#E0F2FF',
-        borderRadius: 20,
+        backgroundColor: colors.white,
+        borderRadius: generalConst.radius,
         borderWidth: 1,
         borderColor: colors.babyBlue,
         overflow: 'hidden', // Keep the content within borders
@@ -111,19 +112,19 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
     },
     dayText: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 20,
+        fontWeight: '400',
         color: colors.blueGrotto,
         textAlign: 'center',
     },
     selectedDayText: {
         color: colors.white,
-        fontWeight: '700',
+        fontWeight: '800',
     },
     freeDayLabel: {
         fontSize: 11,
         marginTop: 3,
-        color: colors.babyBlue,
+        color: colors.blueGrotto,
         fontStyle: 'italic',
         textAlign: 'center',
     },

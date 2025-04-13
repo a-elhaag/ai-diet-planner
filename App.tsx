@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './screens/HomeScreen';
-import NavBar from './components/ui/NavBar';
-import colors from './theme/const';
+import StatsScreen from './screens/StatsScreen';
+import PlanScreen from './screens/PlanScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import Navbar from './components/Navbar';
+import colors from './const/colors';
 
-// Placeholder screens - you can replace these with actual screens later
-const StatsScreen = () => <HomeScreen />;
-const PlanScreen = () => <HomeScreen />;
-const ProfileScreen = () => <HomeScreen />;
+// Define tab types for better type safety
+type TabName = 'home' | 'stats' | 'plan' | 'profile';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState<TabName>('home');
 
   // Render the current screen based on active tab
   const renderScreen = () => {
@@ -29,12 +31,14 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {renderScreen()}
-      </View>
-      <NavBar activeTab={activeTab} onTabPress={setActiveTab} />
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          {renderScreen()}
+        </View>
+        <Navbar activeTab={activeTab} onTabPress={(tab: TabName) => setActiveTab(tab)} />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

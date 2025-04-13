@@ -5,14 +5,17 @@ import {
     StyleSheet,
     Animated,
     Easing,
+    TouchableOpacity,
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import Button from './Button';
-import colors from '../../theme/const';
+import colors from '../../const/colors';
 
 interface MealsType {
     breakfast: string;
     lunch: string;
     dinner: string;
+    snacks?: string[];
 }
 
 interface MealCardProps {
@@ -22,12 +25,20 @@ interface MealCardProps {
 const MealCard: React.FC<MealCardProps> = ({ meals }) => {
     const [animation] = useState(new Animated.Value(0));
     const [flipped, setFlipped] = useState(false);
+    const [completedMeals, setCompletedMeals] = useState<{ [key: string]: boolean }>({
+        breakfast: false,
+        lunch: false,
+        dinner: false,
+        snack1: false,
+        snack2: false,
+    });
 
     // Use default meals if none provided
     const defaultMeals = {
         breakfast: "Greek yogurt with berries",
         lunch: "Grilled chicken salad",
-        dinner: "Baked salmon with vegetables"
+        dinner: "Baked salmon with vegetables",
+        snacks: ["Apple with almond butter", "Protein shake"]
     };
 
     // Use provided meals or fallback to defaults
@@ -70,16 +81,86 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
         }),
     };
 
+    const toggleMealComplete = (mealKey: string) => {
+        setCompletedMeals(prev => ({
+            ...prev,
+            [mealKey]: !prev[mealKey]
+        }));
+    };
+
+    // Calculate progress percentage
+    const getTotalMeals = () => {
+        let count = 3; // breakfast, lunch, dinner
+        if (displayMeals.snacks && displayMeals.snacks.length > 0) {
+            count += displayMeals.snacks.length;
+        }
+        return count;
+    };
+
+    const getCompletedMeals = () => {
+        return Object.values(completedMeals).filter(Boolean).length;
+    };
+
+    const progressPercentage = (getCompletedMeals() / getTotalMeals()) * 100;
+
+    const renderMealCheckItem = (mealType: string, mealText: string, mealKey: string) => (
+        <TouchableOpacity
+            style={styles.mealCheckItem}
+            onPress={() => toggleMealComplete(mealKey)}
+            activeOpacity={0.7}
+        >
+            <View style={[
+                styles.checkbox,
+                completedMeals[mealKey] && styles.checkboxChecked
+            ]}>
+                {completedMeals[mealKey] && (
+                    <Feather name="check" size={16} color={colors.white} />
+                )}
+            </View>
+
+            <View style={styles.mealTextContainer}>
+                <Text style={styles.mealType}>{mealType}</Text>
+                <Text style={[
+                    styles.mealDescription,
+                    completedMeals[mealKey] && styles.mealCompleted
+                ]}>
+                    {mealText}
+                </Text>
+            </View>
+        </TouchableOpacity>
+    );
+
     return (
         <View style={styles.container}>
             <Animated.View style={[styles.card, frontAnimatedStyle]}>
-                {['breakfast', 'lunch', 'dinner'].map((mealType, index) => (
-                    <View key={mealType} style={styles.mealSection}>
-                        <Text style={styles.mealType}>{mealType.charAt(0).toUpperCase() + mealType.slice(1)}</Text>
-                        <Text style={styles.mealDescription}>{displayMeals[mealType as keyof MealsType]}</Text>
-                        {index < 2 && <View style={styles.divider} />}
+                <View style={styles.progressHeader}>
+                    <Text style={styles.progressText}>
+                        Today's Meals {getCompletedMeals()}/{getTotalMeals()}
+                    </Text>
+                    <View style={styles.progressBar}>
+                        <View
+                            style={[
+                                styles.progressFill,
+                                { width: `${progressPercentage}%` }
+                            ]}
+                        />
                     </View>
-                ))}
+                </View>
+
+                <View style={styles.mealsList}>
+                    {renderMealCheckItem('Breakfast', displayMeals.breakfast, 'breakfast')}
+                    {renderMealCheckItem('Lunch', displayMeals.lunch, 'lunch')}
+                    {renderMealCheckItem('Dinner', displayMeals.dinner, 'dinner')}
+
+                    {displayMeals.snacks && displayMeals.snacks.map((snack, index) => (
+                        renderMealCheckItem(
+                            `Snack ${index + 1}`,
+                            snack,
+                            `snack${index + 1}`
+                        )
+                    ))}
+                </View>
+
                 <Button
                     title="View Nutrition Info"
                     onPress={flipCard}
@@ -119,7 +200,7 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
 
 const styles = StyleSheet.create({
     container: {
-        height: 360,
+        height: 470, // Increased height to accommodate checklist
         marginBottom: 30,
     },
     card: {
@@ -141,8 +222,52 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
     },
-    mealSection: {
-        marginBottom: 10,
+    progressHeader: {
+        marginBottom: 16,
+    },
+    progressText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: colors.midnightBlue,
+        marginBottom: 8,
+    },
+    progressBar: {
+        height: 6,
+        backgroundColor: '#f1f5f9',
+        borderRadius: 3,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        height: '100%',
+        backgroundColor: colors.blueGrotto,
+        borderRadius: 3,
+    },
+    mealsList: {
+        marginBottom: 16,
+    },
+    mealCheckItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    checkbox: {
+        width: 24,
+        height: 24,
+        borderRadius: 6,
+        borderWidth: 2,
+        borderColor: colors.babyBlue,
+        marginRight: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    checkboxChecked: {
+        backgroundColor: colors.blueGrotto,
+        borderColor: colors.blueGrotto,
+    },
+    mealTextContainer: {
+        flex: 1,
     },
     mealType: {
         color: colors.blueGrotto,
@@ -153,6 +278,10 @@ const styles = StyleSheet.create({
     mealDescription: {
         color: '#333',
         fontSize: 15,
+    },
+    mealCompleted: {
+        textDecorationLine: 'line-through',
+        color: '#888',
     },
     divider: {
         height: 1,
