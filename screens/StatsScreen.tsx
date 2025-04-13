@@ -31,12 +31,12 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, col
                 <Feather
                     name={change >= 0 ? "arrow-up" : "arrow-down"}
                     size={12}
-                    color={change >= 0 ? colors.green : colors.red}
+                    color={change >= 0 ? colors.babyBlue : colors.babyBlue}
                 />
                 <Text
                     style={[
                         styles.changeText,
-                        { color: change >= 0 ? colors.green : colors.red }
+                        { color: change >= 0 ? colors.babyBlue : colors.babyBlue }
                     ]}
                 >
                     {Math.abs(change)}%
