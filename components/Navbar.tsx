@@ -281,7 +281,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
     const actionItems: ActionItem[] = [
         {
             id: 'off-plan',
-            icon: 'pizza',
+            icon: 'menu',
             text: 'Ate Off Plan',
             onPress: () => {
                 console.log('Ate something off plan');
