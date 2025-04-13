@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import colors from '../const/colors';
-
+import Button from '../components/ui/Button';
 
 const ProfileScreen: React.FC = () => {
     return (
@@ -60,14 +60,20 @@ const ProfileScreen: React.FC = () => {
                         </View>
                     </View>
                 </View>
-
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Edit Profile</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={[styles.button, styles.logoutButton]}>
-                    <Text style={[styles.buttonText, styles.logoutText]}>Log Out</Text>
-                </TouchableOpacity>
+                <Button
+                    title='Edit Profile'
+                    onPress={() => console.log('Edit Profile')}
+                    variant='primary'
+                    size='medium'
+                    fullWidth
+                />
+                <Button
+                    title='Logout'
+                    onPress={() => console.log('Logout')}
+                    variant='outline'
+                    size='medium'
+                    fullWidth
+                />
             </ScrollView>
         </View>
     );

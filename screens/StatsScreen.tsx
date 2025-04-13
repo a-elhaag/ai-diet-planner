@@ -134,7 +134,7 @@ const StatsScreen: React.FC = () => {
                         value="-1.8 lbs"
                         change={-0.98}
                         icon="trending-down"
-                        color={colors.green}
+                        color={colors.midnightBlue}
                     />
                     <MetricCard
                         title="Protein Intake"
@@ -163,7 +163,7 @@ const StatsScreen: React.FC = () => {
                     data={weightData}
                     title="Weight Progress"
                     unit=" lbs"
-                    color={colors.green}
+                    color={colors.babyBlue}
                     showLabels={true}
                 />
             </View>
@@ -234,7 +234,7 @@ const StatsScreen: React.FC = () => {
                     data={weightData}
                     title="Weight Progress"
                     unit=" lbs"
-                    color={colors.green}
+                    color={colors.babyBlue}
                     timeFrame="month"
                 />
 
@@ -259,7 +259,7 @@ const StatsScreen: React.FC = () => {
                         </View>
                         <View style={styles.measurement}>
                             <Text style={styles.measurementLabel}>Total Loss</Text>
-                            <Text style={[styles.measurementValue, { color: colors.green }]}>-1.8 lbs</Text>
+                            <Text style={[styles.measurementValue, { color: colors.babyBlue }]}>-1.8 lbs</Text>
                         </View>
                     </View>
 
@@ -268,7 +268,7 @@ const StatsScreen: React.FC = () => {
                         <View style={styles.progressBar}>
                             <View style={[
                                 styles.progressFill,
-                                { width: "18%", backgroundColor: colors.green }
+                                { width: "18%", backgroundColor: colors.babyBlue }
                             ]} />
                         </View>
                     </View>

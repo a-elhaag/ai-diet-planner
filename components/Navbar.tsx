@@ -75,7 +75,7 @@ const NavItem: React.FC<NavItemProps> = ({ iconName, text, isActive, onPress }) 
             <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                 <Feather
                     name={iconName}
-                    size={22}
+                    size={26}
                     color={isActive ? colors.blueGrotto : '#6b7280'}
                     style={styles.icon}
                 />
@@ -88,37 +88,21 @@ const NavItem: React.FC<NavItemProps> = ({ iconName, text, isActive, onPress }) 
 const FloatingButton: React.FC<{
     item: ActionItem,
     animation: Animated.Value,
-    distance: number,
     index: number,
-    total: number,
     onPress: () => void
-}> = ({ item, animation, distance, index, total, onPress }) => {
+}> = ({ item, animation, index, onPress }) => {
 
-    // Calculate the position for this button
-    // For a more spread out arc, we use PI * 0.8 to space them wider
-    // Distribute buttons in a wider arc to prevent overlap
-    const angle = -Math.PI / 2 - Math.PI * 0.4 + (Math.PI * 0.8) * (index / (total - 1));
-
-    // Distance from main FAB - increase each button's distance by their index to prevent overlap
-    const buttonDistance = distance + (index * 20);
-
-    // Calculate position based on angle and distance
-    const x = Math.cos(angle) * buttonDistance;
-    const y = Math.sin(angle) * buttonDistance;
+    // For a stack layout, we'll position buttons vertically above the main FAB
+    // Each button will be positioned at a consistent vertical distance
+    const buttonDistance = 70 + (index * 75); // Increased distance for each button
 
     const buttonAnimation = {
         opacity: animation,
         transform: [
             {
-                translateX: animation.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, x]
-                })
-            },
-            {
                 translateY: animation.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, y]
+                    outputRange: [0, -buttonDistance]
                 })
             },
             {
@@ -138,7 +122,7 @@ const FloatingButton: React.FC<{
                 activeOpacity={0.8}
             >
                 <View style={styles.actionIconContainer}>
-                    <Feather name={item.icon} size={20} color={colors.white} />
+                    <Feather name={item.icon} size={22} color={colors.white} />
                 </View>
                 <View style={styles.actionLabelContainer}>
                     <Text style={styles.actionLabel}>{item.text}</Text>
@@ -354,9 +338,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
                         key={item.id}
                         item={item}
                         animation={buttonAnimations[index]}
-                        distance={120} // Distance from center
                         index={index}
-                        total={actionItems.length}
                         onPress={() => handleButtonPress(item.onPress)}
                     />
                 ))}
@@ -430,7 +412,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        height: 60,
+        height: 70, // Increased height from 60 to 70
         borderTopWidth: 1,
         borderTopColor: '#e5e7eb',
         shadowColor: colors.black,
@@ -443,7 +425,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
-        paddingVertical: 8,
+        paddingVertical: 10, // Increased padding
+        height: 70, // Set height to match navbar height
     },
     activeItem: {
         position: 'relative',
@@ -452,7 +435,7 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     navText: {
-        fontSize: 12,
+        fontSize: 13, // Increased font size
         color: '#6b7280',
         fontWeight: '500',
     },
@@ -461,7 +444,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     placeholder: {
-        width: 64,
+        width: 74, // Increased width for better proportion
     },
     fabContainer: {
         position: 'absolute',
@@ -470,9 +453,9 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     fab: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        width: 66, // Increased from 56 to 66
+        height: 66, // Increased from 56 to 66
+        borderRadius: 33, // Half of width/height
         backgroundColor: colors.blueGrotto,
         justifyContent: 'center',
         alignItems: 'center',
@@ -495,30 +478,33 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: colors.white,
-        borderRadius: 25,
+        borderRadius: 28, // Increased radius
         shadowColor: colors.black,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.5,
         shadowRadius: 5,
+        marginBottom: 30, // Increased margin
         elevation: 5,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
+        paddingVertical: 10, // Increased padding
+        paddingHorizontal: 16, // Increased padding
+        minWidth: 300, // Set minimum width for consistency
     },
     actionIconContainer: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+        width: 42, // Increased from 36 to 42
+        height: 42, // Increased from 36 to 42
+        borderRadius: 21, // Half of width/height
         backgroundColor: colors.blueGrotto,
         justifyContent: 'center',
         alignItems: 'center',
     },
     actionLabelContainer: {
-        paddingHorizontal: 12,
+        paddingHorizontal: 4, // Increased padding
+        flex: 1, // Take remaining space
     },
     actionLabel: {
         color: colors.midnightBlue,
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: 15, // Increased font size
     }
 });
 

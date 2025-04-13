@@ -70,17 +70,17 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 16,
+        marginVertical: 0, // Increased from 16
     },
     tabs: {
         flexDirection: 'row',
-        borderRadius: 8,
+        borderRadius: 10, // Increased from 8
         backgroundColor: '#E0E0E0',
         overflow: 'hidden',
     },
     tab: {
         flex: 1,
-        paddingVertical: 12,
+        paddingVertical: 14, // Increased from 12
         alignItems: 'center',
     },
     activeTab: {
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     },
     tabText: {
         fontWeight: '600',
+        fontSize: 16, // Added explicit font size
         color: '#666',
     },
     activeTabText: {
@@ -95,23 +96,23 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         backgroundColor: 'white',
-        borderRadius: 12,
-        padding: 16,
-        marginTop: 16,
-        minHeight: 120,
-        elevation: 2,
+        borderRadius: 16, // Increased from 12
+        padding: 20, // Increased from 16
+        marginTop: 20, // Increased from 16
+        minHeight: 140, // Increased from 120
+        elevation: 3, // Increased from 2
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        shadowOffset: { width: 0, height: 2 }, // Slightly larger shadow
+        shadowOpacity: 0.12,
+        shadowRadius: 3,
     },
     statsContent: {
         justifyContent: 'center',
     },
     statsTitle: {
-        fontSize: 16,
+        fontSize: 18, // Increased from 16
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginBottom: 20, // Increased from 16
         color: '#333',
     },
     statsRow: {
@@ -122,30 +123,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     statValue: {
-        fontSize: 24,
+        fontSize: 28, // Increased from 24
         fontWeight: 'bold',
         color: colors.blueGrotto,
     },
     statLabel: {
-        fontSize: 14,
+        fontSize: 16, // Increased from 14
         color: '#666',
-        marginTop: 4,
+        marginTop: 6, // Increased from 4
     },
     tipsContent: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     aiIconContainer: {
-        marginRight: 12,
+        marginRight: 16, // Increased from 12
     },
     aiIcon: {
-        fontSize: 32,
+        fontSize: 38, // Increased from 32
     },
     tipText: {
         flex: 1,
-        fontSize: 15,
+        fontSize: 16, // Increased from 15
         color: '#333',
-        lineHeight: 22,
+        lineHeight: 24, // Increased from 22
     },
 });
 
