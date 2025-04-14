@@ -5,7 +5,7 @@ import {
     StyleSheet,
     TouchableOpacity
 } from 'react-native';
-import colors from '../../const/colors';
+import consts from '../../const/consts';
 
 interface StatsTipsTabProps {
     activeTab: string;
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     activeTab: {
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
     },
     tabText: {
         fontWeight: '600',
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 28, // Increased from 24
         fontWeight: 'bold',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
     },
     statLabel: {
         fontSize: 16, // Increased from 14

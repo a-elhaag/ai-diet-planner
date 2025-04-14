@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import colors from '../const/colors';
+import consts from '../const/consts';
 
 // Define our tab types
 type TabName = 'home' | 'stats' | 'plan' | 'profile';
@@ -76,7 +76,7 @@ const NavItem: React.FC<NavItemProps> = ({ iconName, text, isActive, onPress }) 
                 <Feather
                     name={iconName}
                     size={26}
-                    color={isActive ? colors.blueGrotto : '#6b7280'}
+                    color={isActive ? consts.blueGrotto : '#6b7280'}
                     style={styles.icon}
                 />
             </Animated.View>
@@ -122,7 +122,7 @@ const FloatingButton: React.FC<{
                 activeOpacity={0.8}
             >
                 <View style={styles.actionIconContainer}>
-                    <Feather name={item.icon} size={22} color={colors.white} />
+                    <Feather name={item.icon} size={22} color={consts.white} />
                 </View>
                 <View style={styles.actionLabelContainer}>
                     <Text style={styles.actionLabel}>{item.text}</Text>
@@ -352,7 +352,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
                     accessibilityLabel="Open meal options"
                 >
                     <Animated.View style={{ transform: [{ rotate: rotationDegree }] }}>
-                        <Feather name="plus" size={28} color={colors.white} />
+                        <Feather name="plus" size={28} color={consts.white} />
                     </Animated.View>
                 </TouchableOpacity>
             </View>
@@ -409,13 +409,13 @@ const styles = StyleSheet.create({
     },
     navbar: {
         flexDirection: 'row',
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         justifyContent: 'space-evenly',
         alignItems: 'center',
         height: 70, // Increased height from 60 to 70
         borderTopWidth: 1,
         borderTopColor: '#e5e7eb',
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.08,
         shadowRadius: 3,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     activeText: {
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         fontWeight: '600',
     },
     placeholder: {
@@ -456,10 +456,10 @@ const styles = StyleSheet.create({
         width: 66, // Increased from 56 to 66
         height: 66, // Increased from 56 to 66
         borderRadius: 33, // Half of width/height
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 3,
@@ -477,9 +477,9 @@ const styles = StyleSheet.create({
     actionButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 28, // Increased radius
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
         width: 42, // Increased from 36 to 42
         height: 42, // Increased from 36 to 42
         borderRadius: 21, // Half of width/height
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -502,7 +502,7 @@ const styles = StyleSheet.create({
         flex: 1, // Take remaining space
     },
     actionLabel: {
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         fontWeight: '600',
         fontSize: 15, // Increased font size
     }

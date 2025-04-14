@@ -6,7 +6,7 @@ import StatsScreen from './screens/StatsScreen';
 import PlanScreen from './screens/PlanScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import Navbar from './components/Navbar';
-import colors from './const/colors';
+import consts from './const/consts';
 
 // Define tab types for better type safety
 type TabName = 'home' | 'stats' | 'plan' | 'profile';
@@ -45,7 +45,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ivory,
+    backgroundColor: consts.ivory,
   },
   content: {
     flex: 1,

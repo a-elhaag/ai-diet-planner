@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, StatusBar, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import Navbar from './Navbar';
-import colors from '../const/colors';
+import consts from '../const/consts';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({
     noScroll = false,
     noNavbar = false,
     hideStatusBar = false,
-    backgroundColor = colors.ivory,
+    backgroundColor = consts.ivory,
     contentPadding = true,
     keyboardAvoid = true,
     initialActiveTab = 'home'

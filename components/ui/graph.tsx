@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Svg, Path, Circle, Line, G, Text as SvgText, Rect } from 'react-native-svg';
 import { Feather } from '@expo/vector-icons';
-import colors from '../../const/colors';
+import consts from '../../const/consts';
 
 const { width: screenWidth } = Dimensions.get('window');
 const graphWidth = screenWidth - 70; // More padding to ensure it stays in container
@@ -38,7 +38,7 @@ const Graph: React.FC<GraphProps> = ({
     data,
     title,
     unit = '',
-    color = colors.blueGrotto,
+    color = consts.blueGrotto,
     showLabels = true,
     maxValue,
     type = 'line',
@@ -221,7 +221,7 @@ const Graph: React.FC<GraphProps> = ({
                 </View>
                 <View style={styles.iconContainer}>
                     <TouchableOpacity style={styles.iconButton}>
-                        <Feather name="info" size={18} color={colors.midnightBlue} />
+                        <Feather name="info" size={18} color={consts.midnightBlue} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -273,7 +273,7 @@ const Graph: React.FC<GraphProps> = ({
                                             cx={x}
                                             cy={y}
                                             r={isSelected ? 7 : 5}
-                                            fill={isSelected ? color : colors.white}
+                                            fill={isSelected ? color : consts.white}
                                             stroke={color}
                                             strokeWidth={isSelected ? 3 : 2}
                                         />
@@ -348,11 +348,11 @@ const Graph: React.FC<GraphProps> = ({
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 16,
         padding: 20,
         marginBottom: 20,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
@@ -376,13 +376,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: '700',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 2,
     },
     selectedValue: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
     },
     iconContainer: {
         flexDirection: 'row',
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     },
     axisText: {
         fontSize: 11,
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         opacity: 0.6,
         fontWeight: '500',
     },
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     labelContainer: {
         marginTop: 22,
         padding: 14,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
         borderRadius: 10,
         width: '100%',
         borderWidth: 1,
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 14,
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         lineHeight: 20,
         textAlign: 'center',
     },
@@ -451,13 +451,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginBottom: 20,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
         borderRadius: 24,
         padding: 4,
         alignSelf: 'center',
         borderWidth: 1,
         borderColor: 'rgba(0,0,0,0.05)',
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 3,
@@ -468,8 +468,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     selectedTimeFrame: {
-        backgroundColor: colors.white,
-        shadowColor: colors.black,
+        backgroundColor: consts.white,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
@@ -478,11 +478,11 @@ const styles = StyleSheet.create({
     timeFrameText: {
         fontSize: 14,
         fontWeight: '500',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         opacity: 0.5,
     },
     selectedTimeFrameText: {
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         fontWeight: '600',
         opacity: 1,
     }

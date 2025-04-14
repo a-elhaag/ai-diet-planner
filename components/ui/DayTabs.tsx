@@ -5,11 +5,8 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Platform,
 } from 'react-native';
-import colors from '../../const/colors';
-import generalConst from '../../const/const';
-
+import consts from '../../const/consts';
 interface DayTabsProps {
     days: string[];
     selectedDay: number;
@@ -90,10 +87,10 @@ const styles = StyleSheet.create({
         width: 90, // Fixed width
         height: 60,
         marginHorizontal: 5,
-        backgroundColor: colors.white,
-        borderRadius: generalConst.radius,
+        backgroundColor: consts.white,
+        borderRadius: consts.radius,
         borderWidth: 1,
-        borderColor: colors.babyBlue,
+        borderColor: consts.babyBlue,
         overflow: 'hidden', // Keep the content within borders
     },
     dayTabContent: {
@@ -104,8 +101,8 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     selectedDayTab: {
-        backgroundColor: colors.blueGrotto,
-        borderColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
+        borderColor: consts.blueGrotto,
     },
     freeDayTab: {
         borderStyle: 'dashed',
@@ -114,22 +111,22 @@ const styles = StyleSheet.create({
     dayText: {
         fontSize: 20,
         fontWeight: '400',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         textAlign: 'center',
     },
     selectedDayText: {
-        color: colors.white,
+        color: consts.white,
         fontWeight: '800',
     },
     freeDayLabel: {
         fontSize: 11,
         marginTop: 3,
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         fontStyle: 'italic',
         textAlign: 'center',
     },
     selectedFreeDayLabel: {
-        color: colors.white,
+        color: consts.white,
     },
 });
 

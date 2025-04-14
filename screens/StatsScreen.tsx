@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Graph from '../components/ui/graph';
-import colors from '../const/colors';
+import consts from '../const/consts';
 
 interface MetricCardProps {
     title: string;
@@ -19,7 +19,7 @@ interface MetricCardProps {
     color?: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, color = colors.blueGrotto }) => {
+const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, color = consts.blueGrotto }) => {
     return (
         <View style={[styles.metricCard, { borderLeftColor: color }]}>
             <View style={[styles.iconContainer, { backgroundColor: `${color}20` }]}>
@@ -31,12 +31,12 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, col
                 <Feather
                     name={change >= 0 ? "arrow-up" : "arrow-down"}
                     size={12}
-                    color={change >= 0 ? colors.babyBlue : colors.babyBlue}
+                    color={change >= 0 ? consts.babyBlue : consts.babyBlue}
                 />
                 <Text
                     style={[
                         styles.changeText,
-                        { color: change >= 0 ? colors.babyBlue : colors.babyBlue }
+                        { color: change >= 0 ? consts.babyBlue : consts.babyBlue }
                     ]}
                 >
                     {Math.abs(change)}%
@@ -134,7 +134,7 @@ const StatsScreen: React.FC = () => {
                         value="-1.8 lbs"
                         change={-0.98}
                         icon="trending-down"
-                        color={colors.midnightBlue}
+                        color={consts.midnightBlue}
                     />
                     <MetricCard
                         title="Protein Intake"
@@ -148,7 +148,7 @@ const StatsScreen: React.FC = () => {
                         value="6.1 glasses"
                         change={-10}
                         icon="droplet"
-                        color={colors.babyBlue}
+                        color={consts.babyBlue}
                     />
                 </View>
 
@@ -163,7 +163,7 @@ const StatsScreen: React.FC = () => {
                     data={weightData}
                     title="Weight Progress"
                     unit=" lbs"
-                    color={colors.babyBlue}
+                    color={consts.babyBlue}
                     showLabels={true}
                 />
             </View>
@@ -220,7 +220,7 @@ const StatsScreen: React.FC = () => {
                     data={waterData}
                     title="Water Intake"
                     unit=" glasses"
-                    color={colors.babyBlue}
+                    color={consts.babyBlue}
                     type="bar"
                 />
             </View>
@@ -234,7 +234,7 @@ const StatsScreen: React.FC = () => {
                     data={weightData}
                     title="Weight Progress"
                     unit=" lbs"
-                    color={colors.babyBlue}
+                    color={consts.babyBlue}
                     timeFrame="month"
                 />
 
@@ -259,7 +259,7 @@ const StatsScreen: React.FC = () => {
                         </View>
                         <View style={styles.measurement}>
                             <Text style={styles.measurementLabel}>Total Loss</Text>
-                            <Text style={[styles.measurementValue, { color: colors.babyBlue }]}>-1.8 lbs</Text>
+                            <Text style={[styles.measurementValue, { color: consts.babyBlue }]}>-1.8 lbs</Text>
                         </View>
                     </View>
 
@@ -268,7 +268,7 @@ const StatsScreen: React.FC = () => {
                         <View style={styles.progressBar}>
                             <View style={[
                                 styles.progressFill,
-                                { width: "18%", backgroundColor: colors.babyBlue }
+                                { width: "18%", backgroundColor: consts.babyBlue }
                             ]} />
                         </View>
                     </View>
@@ -301,7 +301,7 @@ const StatsScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
     },
     scrollContainer: {
         flex: 1,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     screenTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 4,
     },
     screenSubtitle: {
@@ -332,8 +332,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     activeTab: {
-        backgroundColor: colors.white,
-        shadowColor: colors.black,
+        backgroundColor: consts.white,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
         color: '#666',
     },
     activeTabText: {
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         fontWeight: '600',
     },
     dateHeader: {
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 16,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
     },
     metricsContainer: {
         flexDirection: 'row',
@@ -365,12 +365,12 @@ const styles = StyleSheet.create({
     },
     metricCard: {
         width: '48%',
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 12,
         padding: 16,
         marginBottom: 16,
         borderLeftWidth: 4,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 3,
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     metricValue: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 6,
     },
     changeContainer: {
@@ -413,10 +413,10 @@ const styles = StyleSheet.create({
     },
     macroCard: {
         width: '31%',
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 12,
         padding: 12,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 3,
@@ -452,11 +452,11 @@ const styles = StyleSheet.create({
         borderRadius: 2,
     },
     bodyStatsCard: {
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 16,
         padding: 16,
         marginVertical: 16,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     bodyStatsTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 16,
     },
     measurementRow: {
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     measurementValue: {
         fontSize: 18,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
     },
     progressBarContainer: {
         marginTop: 8,

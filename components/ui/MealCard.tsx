@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Button from './Button';
-import colors from '../../const/colors';
+import consts from '../../const/consts';
 
 interface MealsType {
     breakfast: string;
@@ -114,7 +114,7 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
                 completedMeals[mealKey] && styles.checkboxChecked
             ]}>
                 {completedMeals[mealKey] && (
-                    <Feather name="check" size={16} color={colors.white} />
+                    <Feather name="check" size={16} color={consts.white} />
                 )}
             </View>
 
@@ -205,12 +205,12 @@ const styles = StyleSheet.create({
     },
     card: {
         flex: 1,
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 16,
         padding: 20,
         backfaceVisibility: 'hidden',
         elevation: 4,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
         shadowRadius: 6,
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     progressText: {
         fontSize: 16,
         fontWeight: '700',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 8,
     },
     progressBar: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     },
     progressFill: {
         height: '100%',
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
         borderRadius: 3,
     },
     mealsList: {
@@ -257,20 +257,20 @@ const styles = StyleSheet.create({
         height: 24,
         borderRadius: 6,
         borderWidth: 2,
-        borderColor: colors.babyBlue,
+        borderColor: consts.babyBlue,
         marginRight: 12,
         justifyContent: 'center',
         alignItems: 'center',
     },
     checkboxChecked: {
-        backgroundColor: colors.blueGrotto,
-        borderColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
+        borderColor: consts.blueGrotto,
     },
     mealTextContainer: {
         flex: 1,
     },
     mealType: {
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         fontWeight: '700',
         fontSize: 16,
         marginBottom: 4,
@@ -285,13 +285,13 @@ const styles = StyleSheet.create({
     },
     divider: {
         height: 1,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
         marginTop: 10,
     },
     nutritionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         textAlign: 'center',
         marginBottom: 12,
     },
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     nutritionValue: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
     },
     nutritionLabel: {
         fontSize: 13,

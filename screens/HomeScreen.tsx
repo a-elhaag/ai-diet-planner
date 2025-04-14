@@ -13,7 +13,7 @@ import MealCard from '../components/ui/MealCard';
 import StatsTipsTab from '../components/ui/StatsTipsTab';
 import Button from '../components/ui/Button';
 import { Feather } from '@expo/vector-icons';
-import colors from '../const/colors';
+import consts from '../const/consts';
 
 const { width } = Dimensions.get('window');
 
@@ -227,7 +227,7 @@ const HomeScreen: React.FC = () => {
                             <Feather
                                 name="droplet"
                                 size={18}
-                                color={glass <= 4 ? colors.white : colors.babyBlue}
+                                color={glass <= 4 ? consts.white : consts.babyBlue}
                             />
                         </View>
                     </TouchableOpacity>
@@ -244,7 +244,7 @@ const HomeScreen: React.FC = () => {
             ]}
         >
             <View style={styles.tipHeader}>
-                <Feather name="zap" size={20} color={colors.midnightBlue} />
+                <Feather name="zap" size={20} color={consts.midnightBlue} />
                 <Text style={styles.tipTitle}>Daily Tip</Text>
             </View>
             <Text style={styles.tipText}>
@@ -307,7 +307,7 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
     },
     scrollView: {
         flex: 1,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     greeting: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 4,
     },
     date: {
@@ -332,10 +332,10 @@ const styles = StyleSheet.create({
     progressContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 12,
         padding: 16,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -358,13 +358,13 @@ const styles = StyleSheet.create({
         left: 0,
         top: 0,
         bottom: 0,
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
         borderRadius: 15,
     },
     progressText: {
         fontSize: 14,
         fontWeight: '700',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         zIndex: 1,
     },
     progressInfo: {
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     progressLabel: {
         fontSize: 16,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 2,
     },
     progressSubtext: {
@@ -384,11 +384,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     nutritionCard: {
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 12,
         padding: 16,
         marginVertical: 12,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
     nutritionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 16,
     },
     macrosContainer: {
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     macroValue: {
         fontSize: 18,
         fontWeight: '700',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         marginBottom: 4,
     },
     macroLabel: {
@@ -419,11 +419,11 @@ const styles = StyleSheet.create({
         color: '#666',
     },
     waterCard: {
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 12,
         padding: 16,
         marginVertical: 12,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -438,12 +438,12 @@ const styles = StyleSheet.create({
     waterTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
     },
     waterAmount: {
         fontSize: 16,
         fontWeight: '600',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
     },
     waterTracker: {
         flexDirection: 'row',
@@ -463,17 +463,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: colors.babyBlue,
+        borderColor: consts.babyBlue,
     },
     waterGlassFilled: {
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
     },
     tipCard: {
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderRadius: 12,
         padding: 16,
         marginVertical: 12,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     tipTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginLeft: 8,
     },
     tipText: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, TouchableOpacityProps, View } from 'react-native';
-import colors from '../../const/colors';
+import consts from '../../const/consts';
 
 interface ButtonProps extends TouchableOpacityProps {
     title: string;
@@ -20,22 +20,22 @@ const Button: React.FC<ButtonProps> = ({
     const getBackgroundColor = () => {
         switch (variant) {
             case 'primary':
-                return colors.blueGrotto;
+                return consts.blueGrotto;
             case 'secondary':
-                return colors.midnightBlue;
+                return consts.midnightBlue;
             case 'outline':
                 return 'transparent';
             default:
-                return colors.blueGrotto;
+                return consts.blueGrotto;
         }
     };
 
     const getTextColor = () => {
-        return variant === 'outline' ? colors.blueGrotto : colors.white;
+        return variant === 'outline' ? consts.blueGrotto : consts.white;
     };
 
     const getBorderStyle = () => {
-        return variant === 'outline' ? { borderWidth: 2, borderColor: colors.blueGrotto } : {};
+        return variant === 'outline' ? { borderWidth: 2, borderColor: consts.blueGrotto } : {};
     };
 
     // Get fixed dimensions based on size
