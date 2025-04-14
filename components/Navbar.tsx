@@ -351,7 +351,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 10, // Added space from bottom edge
+        bottom: -30, // Added space from bottom edge
         left: 20, // Added space from left edge
         right: 20, // Added space from right edge
         zIndex: 1000, // Ensure it's above other elements

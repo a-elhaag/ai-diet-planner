@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     contentPadding: {
-        paddingBottom: 80, // Account for navbar height
+        paddingBottom: 50, // Increased padding to account for navbar and ensure content doesn't get hidden
     },
     stack: {
         flex: 1,

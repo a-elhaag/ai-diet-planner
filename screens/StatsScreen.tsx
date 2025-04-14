@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
+import { useUnit } from '../contexts/UnitContext';
 
 interface MetricCardProps {
     title: string;
@@ -96,6 +97,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
 
 const StatsScreen: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'overview' | 'nutrition' | 'body'>('overview');
+    const { unitSystem, formatWeight } = useUnit();
 
     // Mock data for progress cards
     const caloriesData = {
@@ -105,12 +107,22 @@ const StatsScreen: React.FC = () => {
         color: '#F2994A'
     };
 
+    // Weight data in lbs (imperial)
     const weightData = {
-        current: 183.2,
-        target: 175,
+        currentLbs: 183.2,
+        targetLbs: 175,
         percentage: 18,
         color: consts.babyBlue
     };
+
+    // Format for display based on unit system
+    const weightChangeValue = unitSystem === 'imperial'
+        ? `-1.8 lbs`
+        : `-${(1.8 / 2.20462).toFixed(1)} kg`;
+
+    const currentWeightValue = formatWeight(weightData.currentLbs);
+    const targetWeightValue = formatWeight(weightData.targetLbs);
+    const startingWeightValue = formatWeight(185);
 
     const macrosData = [
         { name: 'Protein', current: 114, target: 120, percentage: 95, color: '#9B51E0', icon: 'box' as React.ComponentProps<typeof Feather>['name'] },
@@ -169,7 +181,7 @@ const StatsScreen: React.FC = () => {
                     />
                     <MetricCard
                         title="Weight Change"
-                        value="-1.8 lbs"
+                        value={weightChangeValue}
                         change={-0.98}
                         icon="trending-down"
                         color={consts.midnightBlue}
@@ -204,12 +216,12 @@ const StatsScreen: React.FC = () => {
                 {/* Weight progress card instead of graph */}
                 <ProgressCard
                     title="Weight Progress"
-                    value={weightData.current}
-                    target={weightData.target}
+                    value={unitSystem === 'imperial' ? weightData.currentLbs : (weightData.currentLbs / 2.20462).toFixed(1)}
+                    target={unitSystem === 'imperial' ? weightData.targetLbs : (weightData.targetLbs / 2.20462).toFixed(1)}
                     percentage={weightData.percentage}
                     color={weightData.color}
                     icon="trending-down"
-                    unit=" lbs"
+                    unit={unitSystem === 'imperial' ? " lbs" : " kg"}
                 />
             </View>
         );
@@ -262,12 +274,12 @@ const StatsScreen: React.FC = () => {
             <View>
                 <ProgressCard
                     title="Weight Goal Progress"
-                    value={weightData.current}
-                    target={weightData.target}
+                    value={unitSystem === 'imperial' ? weightData.currentLbs : (weightData.currentLbs / 2.20462).toFixed(1)}
+                    target={unitSystem === 'imperial' ? weightData.targetLbs : (weightData.targetLbs / 2.20462).toFixed(1)}
                     percentage={weightData.percentage}
                     color={weightData.color}
                     icon="trending-down"
-                    unit=" lbs"
+                    unit={unitSystem === 'imperial' ? " lbs" : " kg"}
                 />
 
                 <View style={styles.bodyStatsCard}>
@@ -276,22 +288,24 @@ const StatsScreen: React.FC = () => {
                     <View style={styles.measurementRow}>
                         <View style={styles.measurement}>
                             <Text style={styles.measurementLabel}>Starting Weight</Text>
-                            <Text style={styles.measurementValue}>185 lbs</Text>
+                            <Text style={styles.measurementValue}>{startingWeightValue}</Text>
                         </View>
                         <View style={styles.measurement}>
                             <Text style={styles.measurementLabel}>Current Weight</Text>
-                            <Text style={styles.measurementValue}>183.2 lbs</Text>
+                            <Text style={styles.measurementValue}>{currentWeightValue}</Text>
                         </View>
                     </View>
 
                     <View style={styles.measurementRow}>
                         <View style={styles.measurement}>
                             <Text style={styles.measurementLabel}>Goal Weight</Text>
-                            <Text style={styles.measurementValue}>175 lbs</Text>
+                            <Text style={styles.measurementValue}>{targetWeightValue}</Text>
                         </View>
                         <View style={styles.measurement}>
                             <Text style={styles.measurementLabel}>Total Loss</Text>
-                            <Text style={[styles.measurementValue, { color: consts.babyBlue }]}>-1.8 lbs</Text>
+                            <Text style={[styles.measurementValue, { color: consts.babyBlue }]}>
+                                {weightChangeValue}
+                            </Text>
                         </View>
                     </View>
                 </View>

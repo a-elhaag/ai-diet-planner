@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
     },
     buttonsContainer: {
         marginTop: 16,
-        marginBottom: 80,
+        marginBottom: 15, // Increased from 80 to ensure content doesn't overlap with navbar
     },
 });
 

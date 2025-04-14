@@ -70,6 +70,8 @@ const PlanScreen: React.FC = () => {
                     fullWidth
                 />
 
+                {/* Extra padding space to avoid navbar overlap */}
+                <View style={styles.bottomSpacer} />
 
             </ScrollView>
         </View>
@@ -105,6 +107,9 @@ const styles = StyleSheet.create({
         color: consts.white,
         fontWeight: '600',
         fontSize: 16,
+    },
+    bottomSpacer: {
+        height: 25,
     }
 });
 

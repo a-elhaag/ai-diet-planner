@@ -1,10 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Switch } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
 import Button from '../components/ui/Button';
+import { useUnit } from '../contexts/UnitContext';
 
 const ProfileScreen: React.FC = () => {
+    const { unitSystem, toggleUnitSystem, formatWeight, formatHeight } = useUnit();
+
+    // Convert default values from the hard-coded values
+    // Assuming height is 5'11" (71 inches) and weight is 185 lbs
+    const heightInInches = 71; // 5'11"
+    const weightInLbs = 185;
+
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
@@ -26,12 +34,12 @@ const ProfileScreen: React.FC = () => {
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Height</Text>
-                        <Text style={styles.infoValue}>5'11" (180 cm)</Text>
+                        <Text style={styles.infoValue}>{formatHeight(heightInInches)}</Text>
                     </View>
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Weight</Text>
-                        <Text style={styles.infoValue}>185 lbs (84 kg)</Text>
+                        <Text style={styles.infoValue}>{formatWeight(weightInLbs)}</Text>
                     </View>
 
                     <View style={styles.infoItem}>
@@ -60,6 +68,37 @@ const ProfileScreen: React.FC = () => {
                         </View>
                     </View>
                 </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>App Settings</Text>
+
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Units</Text>
+                        <View style={styles.unitToggleContainer}>
+                            <Text style={[
+                                styles.unitLabel,
+                                unitSystem === 'imperial' ? styles.activeUnitLabel : {}
+                            ]}>
+                                Imperial
+                            </Text>
+                            <Switch
+                                trackColor={{ false: consts.babyBlue, true: consts.babyBlue }}
+                                thumbColor={unitSystem === 'metric' ? consts.blueGrotto : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={toggleUnitSystem}
+                                value={unitSystem === 'metric'}
+                                style={styles.switch}
+                            />
+                            <Text style={[
+                                styles.unitLabel,
+                                unitSystem === 'metric' ? styles.activeUnitLabel : {}
+                            ]}>
+                                Metric
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+
                 <Button
                     title='Edit Profile'
                     onPress={() => console.log('Edit Profile')}
@@ -74,6 +113,9 @@ const ProfileScreen: React.FC = () => {
                     size='medium'
                     fullWidth
                 />
+
+                {/* Add extra padding space at bottom to prevent navbar overlap */}
+                <View style={styles.bottomPadding} />
             </ScrollView>
         </View>
     );
@@ -155,6 +197,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
+        alignItems: 'center',
     },
     infoLabel: {
         fontSize: 16,
@@ -201,7 +244,26 @@ const styles = StyleSheet.create({
     },
     logoutText: {
         color: '#ef4444',
-    }
+    },
+    unitToggleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    switch: {
+        marginHorizontal: 5,
+    },
+    unitLabel: {
+        fontSize: 14,
+        color: '#666',
+    },
+    activeUnitLabel: {
+        fontWeight: '600',
+        color: consts.blueGrotto,
+    },
+    bottomPadding: {
+        height: 20, // Enough space to clear the floating navbar
+        marginBottom: 10,
+    },
 });
 
 export default ProfileScreen;
