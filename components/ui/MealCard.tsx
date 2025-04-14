@@ -206,14 +206,14 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
         backgroundColor: consts.white,
-        borderRadius: 16,
+        borderRadius: 38,
         padding: 20,
         backfaceVisibility: 'hidden',
         elevation: 4,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
-        shadowRadius: 6,
+        shadowRadius: 38,
         justifyContent: 'space-between',
     },
     backCard: {
@@ -234,13 +234,13 @@ const styles = StyleSheet.create({
     progressBar: {
         height: 6,
         backgroundColor: '#f1f5f9',
-        borderRadius: 3,
+        borderRadius: 6,
         overflow: 'hidden',
     },
     progressFill: {
         height: '100%',
         backgroundColor: consts.blueGrotto,
-        borderRadius: 3,
+        borderRadius: 38,
     },
     mealsList: {
         marginBottom: 16,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     checkbox: {
         width: 24,
         height: 24,
-        borderRadius: 6,
+        borderRadius: 38,
         borderWidth: 2,
         borderColor: consts.babyBlue,
         marginRight: 12,

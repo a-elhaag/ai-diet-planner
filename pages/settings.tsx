@@ -159,11 +159,11 @@ const styles = StyleSheet.create({
     },
     actionStack: {
         backgroundColor: consts.white,
-        borderRadius: 16,
+        borderRadius: 38,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
-        shadowRadius: 10,
+        shadowRadius: 20,
         elevation: 2,
         marginHorizontal: 16,
         overflow: 'hidden',
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     actionIcon: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        borderRadius: 38,
         backgroundColor: 'rgba(132, 199, 242, 0.15)', // Using babyBlue with opacity
         justifyContent: 'center',
         alignItems: 'center',

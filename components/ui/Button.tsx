@@ -80,7 +80,7 @@ const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
     button: {
-        borderRadius: 14,
+        borderRadius: 28,
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'center',

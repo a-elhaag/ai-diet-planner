@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         height: 60,
         marginHorizontal: 5,
         backgroundColor: consts.white,
-        borderRadius: consts.radius,
+        borderRadius: 26,
         borderWidth: 1,
         borderColor: consts.babyBlue,
         overflow: 'hidden', // Keep the content within borders

@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: consts.blueGrotto,
-        borderRadius: 8,
+        borderRadius: 30,
         padding: 16,
         alignItems: 'center',
         marginVertical: 24,

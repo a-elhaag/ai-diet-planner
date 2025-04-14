@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
-        shadowRadius: 4,
+        shadowRadius: 6,
         elevation: 3,
     },
     editButton: {
@@ -134,13 +134,13 @@ const styles = StyleSheet.create({
     },
     section: {
         backgroundColor: consts.white,
-        borderRadius: 8,
+        borderRadius: 30,
         padding: 16,
         marginBottom: 20,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowRadius: 6,
         elevation: 2,
     },
     sectionTitle: {
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
         backgroundColor: consts.babyBlue + '30',
         paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 16,
+        borderRadius: 38,
         marginRight: 8,
         marginBottom: 8,
     },
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: consts.blueGrotto,
-        borderRadius: 8,
+        borderRadius: 30,
         padding: 16,
         alignItems: 'center',
         marginBottom: 12,

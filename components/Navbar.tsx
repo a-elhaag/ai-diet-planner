@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.08,
-        shadowRadius: 3,
+        shadowRadius: 6,
         elevation: 8,
     },
     navItem: {
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
-        shadowRadius: 3,
+        shadowRadius: 23,
         elevation: 5,
         zIndex: 10,
     },
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: consts.white,
-        borderRadius: 28, // Increased radius
+        borderRadius: 38, // Increased radius
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.5,
