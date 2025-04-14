@@ -147,9 +147,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
     // Animations for each floating button
     const buttonAnimations = useRef(Array(4).fill(0).map(() => new Animated.Value(0))).current;
 
-    // Background overlay animation
-    const overlayAnimation = useRef(new Animated.Value(0)).current;
-
     // Handle FAB press - show/hide menu
     const handleFabPress = () => {
         if (!menuVisible) {
@@ -158,13 +155,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
 
             // Animate FAB rotation
             Animated.timing(rotationValue, {
-                toValue: 1,
-                duration: 300,
-                useNativeDriver: true,
-            }).start();
-
-            // Animate overlay
-            Animated.timing(overlayAnimation, {
                 toValue: 1,
                 duration: 300,
                 useNativeDriver: true,
@@ -189,13 +179,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
 
             // Animate FAB rotation
             Animated.timing(rotationValue, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true,
-            }).start();
-
-            // Animate overlay
-            Animated.timing(overlayAnimation, {
                 toValue: 0,
                 duration: 300,
                 useNativeDriver: true,
@@ -227,13 +210,8 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
 
         // Animate button press with a bounce effect
         Animated.sequence([
-            // First close other buttons and fade overlay
+            // First close other buttons
             Animated.parallel([
-                Animated.timing(overlayAnimation, {
-                    toValue: 0,
-                    duration: 300,
-                    useNativeDriver: true,
-                }),
                 Animated.timing(rotationValue, {
                     toValue: 0,
                     duration: 300,
@@ -309,28 +287,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
             styles.container,
             { paddingBottom: Math.max(insets.bottom, 4) }
         ]}>
-            {/* Background overlay when menu is open */}
-            {menuVisible && (
-                <Animated.View
-                    style={[
-                        styles.overlay,
-                        {
-                            opacity: overlayAnimation.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [0, 0.6]
-                            })
-                        }
-                    ]}
-                    pointerEvents={menuVisible ? "auto" : "none"}
-                >
-                    <TouchableOpacity
-                        style={styles.overlayTouchable}
-                        onPress={handleFabPress}
-                        activeOpacity={1}
-                    />
-                </Animated.View>
-            )}
-
             {/* Floating action buttons */}
             <View style={styles.fabContainer}>
                 {menuVisible && actionItems.map((item, index) => (
@@ -395,38 +351,31 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-    },
-    overlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'black',
-        zIndex: 5,
-    },
-    overlayTouchable: {
-        flex: 1,
+        bottom: 10, // Added space from bottom edge
+        left: 20, // Added space from left edge
+        right: 20, // Added space from right edge
+        zIndex: 1000, // Ensure it's above other elements
     },
     navbar: {
         flexDirection: 'row',
         backgroundColor: consts.white,
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        height: 70, // Increased height from 60 to 70
-        borderTopWidth: 1,
-        borderTopColor: '#e5e7eb',
+        height: 60, // Reduced height from 70 to 60
+        borderRadius: 30, // Added rounded corners
         shadowColor: consts.black,
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
         elevation: 8,
+        paddingHorizontal: 12, // Added horizontal padding
     },
     navItem: {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
-        paddingVertical: 10, // Increased padding
-        height: 70, // Set height to match navbar height
+        paddingVertical: 8, // Reduced padding from 10
+        height: 60, // Match navbar height
     },
     activeItem: {
         position: 'relative',
@@ -444,25 +393,26 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     placeholder: {
-        width: 74, // Increased width for better proportion
+        width: 65, // Reduced width from 74
     },
     fabContainer: {
         position: 'absolute',
         alignSelf: 'center',
-        bottom: 30,
+        bottom: 26, // Adjusted to work with floating navbar
         zIndex: 10,
     },
     fab: {
-        width: 66, // Increased from 56 to 66
-        height: 66, // Increased from 56 to 66
-        borderRadius: 33, // Half of width/height
+        width: 48, // Reduced from 66
+        height: 48, // Reduced from 66
+        borderRadius: 29, // Half of width/height
         backgroundColor: consts.blueGrotto,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
-        shadowRadius: 23,
+        marginBottom: 15, // Reduced from 30
+        shadowRadius: 6,
         elevation: 5,
         zIndex: 10,
     },
@@ -478,21 +428,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: consts.white,
-        borderRadius: 38, // Increased radius
+        borderRadius: 28,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.5,
+        shadowOpacity: 0.3,
         shadowRadius: 5,
-        marginBottom: 30, // Increased margin
+        marginBottom: 20, // Reduced from 30
         elevation: 5,
-        paddingVertical: 10, // Increased padding
-        paddingHorizontal: 16, // Increased padding
-        minWidth: 300, // Set minimum width for consistency
+        paddingVertical: 8, // Reduced from 10
+        paddingHorizontal: 14, // Reduced from 16
+        minWidth: 240, // Reduced from 300
     },
     actionIconContainer: {
-        width: 42, // Increased from 36 to 42
-        height: 42, // Increased from 36 to 42
-        borderRadius: 21, // Half of width/height
+        width: 38, // Reduced from 42
+        height: 38, // Reduced from 42
+        borderRadius: 19, // Half of width/height
         backgroundColor: consts.blueGrotto,
         justifyContent: 'center',
         alignItems: 'center',

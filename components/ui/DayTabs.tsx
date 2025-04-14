@@ -75,30 +75,30 @@ const DayTabs: React.FC<DayTabsProps> = ({
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 12,
-        marginBottom: 12,
-        paddingHorizontal: 12,
+        marginTop: 6, // Reduced from 12
+        marginBottom: 6, // Reduced from 12
+        paddingHorizontal: 8, // Reduced from 12
     },
     scrollContent: {
-        paddingVertical: 6,
+        paddingVertical: 3, // Reduced from 6
         alignItems: 'center',
     },
     dayTab: {
-        width: 90, // Fixed width
-        height: 60,
-        marginHorizontal: 5,
+        width: 70, // Reduced from 90
+        height: 46, // Reduced from 60
+        marginHorizontal: 3, // Reduced from 5
         backgroundColor: consts.white,
-        borderRadius: 26,
+        borderRadius: 20, // Reduced from 26
         borderWidth: 1,
         borderColor: consts.babyBlue,
-        overflow: 'hidden', // Keep the content within borders
+        overflow: 'hidden',
     },
     dayTabContent: {
         width: '100%',
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 4,
+        padding: 2, // Reduced from 4
     },
     selectedDayTab: {
         backgroundColor: consts.blueGrotto,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
     },
     dayText: {
-        fontSize: 20,
+        fontSize: 16, // Reduced from 20
         fontWeight: '400',
         color: consts.blueGrotto,
         textAlign: 'center',
@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
         fontWeight: '800',
     },
     freeDayLabel: {
-        fontSize: 11,
-        marginTop: 3,
+        fontSize: 9, // Reduced from 11
+        marginTop: 2, // Reduced from 3
         color: consts.blueGrotto,
         fontStyle: 'italic',
         textAlign: 'center',

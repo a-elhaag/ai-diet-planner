@@ -8,7 +8,6 @@ import {
     Animated
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Graph from '../components/ui/graph';
 import consts from '../const/consts';
 
 interface MetricCardProps {
@@ -17,6 +16,16 @@ interface MetricCardProps {
     change: number;
     icon: React.ComponentProps<typeof Feather>['name'];
     color?: string;
+}
+
+interface ProgressCardProps {
+    title: string;
+    value: string | number;
+    target: string | number;
+    percentage: number;
+    color?: string;
+    icon?: React.ComponentProps<typeof Feather>['name'];
+    unit?: string;
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, color = consts.blueGrotto }) => {
@@ -46,46 +55,75 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, col
     );
 };
 
+const ProgressCard: React.FC<ProgressCardProps> = ({
+    title,
+    value,
+    target,
+    percentage,
+    color = consts.blueGrotto,
+    icon,
+    unit = ''
+}) => {
+    return (
+        <View style={styles.progressCard}>
+            <View style={styles.progressCardHeader}>
+                <View style={styles.progressCardTitleContainer}>
+                    {icon && (
+                        <View style={[styles.smallIconContainer, { backgroundColor: `${color}20` }]}>
+                            <Feather name={icon} size={14} color={color} />
+                        </View>
+                    )}
+                    <Text style={styles.progressCardTitle}>{title}</Text>
+                </View>
+                <Text style={[styles.progressCardValue, { color }]}>
+                    {value}{unit} <Text style={styles.progressCardTarget}>/ {target}{unit}</Text>
+                </Text>
+            </View>
+            <View style={styles.progressBarContainer}>
+                <View style={styles.progressBar}>
+                    <View
+                        style={[
+                            styles.progressFill,
+                            { width: `${Math.min(percentage, 100)}%`, backgroundColor: color }
+                        ]}
+                    />
+                </View>
+                <Text style={styles.progressPercentage}>{percentage}%</Text>
+            </View>
+        </View>
+    );
+};
+
 const StatsScreen: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'overview' | 'nutrition' | 'body'>('overview');
-    const [caloriesTimeFrame, setCaloriesTimeFrame] = useState<'week' | 'month' | 'year'>('week');
 
-    // Mock data for graphs
-    const caloriesData = [
-        { value: 1750, date: '2025-04-07', label: 'Monday: 1750 cal - Under target by 250 cal' },
-        { value: 2100, date: '2025-04-08', label: 'Tuesday: 2100 cal - On target' },
-        { value: 1900, date: '2025-04-09', label: 'Wednesday: 1900 cal - On target' },
-        { value: 2300, date: '2025-04-10', label: 'Thursday: 2300 cal - Over target by 200 cal' },
-        { value: 2000, date: '2025-04-11', label: 'Friday: 2000 cal - On target' },
-        { value: 2400, date: '2025-04-12', label: 'Saturday: 2400 cal - Over target by 300 cal' },
-        { value: 1800, date: '2025-04-13', label: 'Sunday: 1800 cal - On target' }
-    ];
+    // Mock data for progress cards
+    const caloriesData = {
+        current: 1850,
+        target: 2100,
+        percentage: 88,
+        color: '#F2994A'
+    };
 
-    const weightData = [
-        { value: 185, date: '2025-04-01', label: 'April 1: 185 lbs' },
-        { value: 184, date: '2025-04-06', label: 'April 6: 184 lbs' },
-        { value: 183.2, date: '2025-04-13', label: 'April 13: 183.2 lbs' }
-    ];
+    const weightData = {
+        current: 183.2,
+        target: 175,
+        percentage: 18,
+        color: consts.babyBlue
+    };
 
     const macrosData = [
-        { value: 110, date: '2025-04-07', label: 'Monday: 110g protein (22% of calories)' },
-        { value: 125, date: '2025-04-08', label: 'Tuesday: 125g protein (24% of calories)' },
-        { value: 95, date: '2025-04-09', label: 'Wednesday: 95g protein (20% of calories)' },
-        { value: 130, date: '2025-04-10', label: 'Thursday: 130g protein (22% of calories)' },
-        { value: 115, date: '2025-04-11', label: 'Friday: 115g protein (23% of calories)' },
-        { value: 100, date: '2025-04-12', label: 'Saturday: 100g protein (17% of calories)' },
-        { value: 120, date: '2025-04-13', label: 'Sunday: 120g protein (27% of calories)' }
+        { name: 'Protein', current: 114, target: 120, percentage: 95, color: '#9B51E0', icon: 'box' as React.ComponentProps<typeof Feather>['name'] },
+        { name: 'Carbs', current: 210, target: 225, percentage: 93, color: '#F2994A', icon: 'pie-chart' as React.ComponentProps<typeof Feather>['name'] },
+        { name: 'Fats', current: 60, target: 65, percentage: 92, color: '#219653', icon: 'droplet' as React.ComponentProps<typeof Feather>['name'] }
     ];
 
-    const waterData = [
-        { value: 5, date: '2025-04-07', label: '5 glasses (1.25L)' },
-        { value: 7, date: '2025-04-08', label: '7 glasses (1.75L)' },
-        { value: 6, date: '2025-04-09', label: '6 glasses (1.5L)' },
-        { value: 8, date: '2025-04-10', label: '8 glasses (2L)' },
-        { value: 7, date: '2025-04-11', label: '7 glasses (1.75L)' },
-        { value: 4, date: '2025-04-12', label: '4 glasses (1L)' },
-        { value: 6, date: '2025-04-13', label: '6 glasses (1.5L)' }
-    ];
+    const waterData = {
+        current: 6,
+        target: 8,
+        percentage: 75,
+        color: consts.babyBlue
+    };
 
     const renderTabSelector = () => {
         return (
@@ -152,19 +190,26 @@ const StatsScreen: React.FC = () => {
                     />
                 </View>
 
-                <Graph
-                    data={caloriesData}
+                {/* Calorie intake progress card instead of graph */}
+                <ProgressCard
                     title="Calorie Intake"
+                    value={caloriesData.current}
+                    target={caloriesData.target}
+                    percentage={caloriesData.percentage}
+                    color={caloriesData.color}
+                    icon="zap"
                     unit=" cal"
-                    type="bar"
                 />
 
-                <Graph
-                    data={weightData}
+                {/* Weight progress card instead of graph */}
+                <ProgressCard
                     title="Weight Progress"
+                    value={weightData.current}
+                    target={weightData.target}
+                    percentage={weightData.percentage}
+                    color={weightData.color}
+                    icon="trending-down"
                     unit=" lbs"
-                    color={consts.babyBlue}
-                    showLabels={true}
                 />
             </View>
         );
@@ -173,56 +218,41 @@ const StatsScreen: React.FC = () => {
     const renderNutritionTab = () => {
         return (
             <View>
-                <View style={styles.nutritionCards}>
-                    <View style={styles.macroCard}>
-                        <Text style={styles.macroTitle}>Proteins</Text>
-                        <View style={styles.macroValueContainer}>
-                            <Text style={[styles.macroValue, { color: "#9B51E0" }]}>114g</Text>
-                            <Text style={styles.macroTarget}>/ 120g</Text>
-                        </View>
-                        <View style={styles.progressBar}>
-                            <View style={[styles.progressFill, { width: "95%", backgroundColor: "#9B51E0" }]} />
-                        </View>
-                    </View>
+                {/* Macros progress cards */}
+                {macrosData.map((macro, index) => (
+                    <ProgressCard
+                        key={index}
+                        title={macro.name}
+                        value={macro.current}
+                        target={macro.target}
+                        percentage={macro.percentage}
+                        color={macro.color}
+                        icon={macro.icon}
+                        unit="g"
+                    />
+                ))}
 
-                    <View style={styles.macroCard}>
-                        <Text style={styles.macroTitle}>Carbs</Text>
-                        <View style={styles.macroValueContainer}>
-                            <Text style={[styles.macroValue, { color: "#F2994A" }]}>210g</Text>
-                            <Text style={styles.macroTarget}>/ 225g</Text>
-                        </View>
-                        <View style={styles.progressBar}>
-                            <View style={[styles.progressFill, { width: "93%", backgroundColor: "#F2994A" }]} />
-                        </View>
-                    </View>
-
-                    <View style={styles.macroCard}>
-                        <Text style={styles.macroTitle}>Fats</Text>
-                        <View style={styles.macroValueContainer}>
-                            <Text style={[styles.macroValue, { color: "#219653" }]}>60g</Text>
-                            <Text style={styles.macroTarget}>/ 65g</Text>
-                        </View>
-                        <View style={styles.progressBar}>
-                            <View style={[styles.progressFill, { width: "92%", backgroundColor: "#219653" }]} />
-                        </View>
-                    </View>
-                </View>
-
-                <Graph
-                    data={macrosData}
-                    title="Protein Intake"
-                    unit="g"
-                    color="#9B51E0"
-                    showLabels={true}
-                />
-
-                <Graph
-                    data={waterData}
+                {/* Water intake progress card */}
+                <ProgressCard
                     title="Water Intake"
+                    value={waterData.current}
+                    target={waterData.target}
+                    percentage={waterData.percentage}
+                    color={waterData.color}
+                    icon="droplet"
                     unit=" glasses"
-                    color={consts.babyBlue}
-                    type="bar"
                 />
+
+                <View style={styles.nutritionInfoCard}>
+                    <View style={styles.nutritionInfoHeader}>
+                        <Feather name="info" size={16} color={consts.midnightBlue} />
+                        <Text style={styles.nutritionInfoTitle}>Nutrition Insight</Text>
+                    </View>
+                    <Text style={styles.nutritionInfoText}>
+                        Your protein intake is consistent with your goals.
+                        Consider increasing water intake by 1-2 glasses daily for optimal hydration.
+                    </Text>
+                </View>
             </View>
         );
     };
@@ -230,12 +260,14 @@ const StatsScreen: React.FC = () => {
     const renderBodyTab = () => {
         return (
             <View>
-                <Graph
-                    data={weightData}
-                    title="Weight Progress"
+                <ProgressCard
+                    title="Weight Goal Progress"
+                    value={weightData.current}
+                    target={weightData.target}
+                    percentage={weightData.percentage}
+                    color={weightData.color}
+                    icon="trending-down"
                     unit=" lbs"
-                    color={consts.babyBlue}
-                    timeFrame="month"
                 />
 
                 <View style={styles.bodyStatsCard}>
@@ -262,14 +294,28 @@ const StatsScreen: React.FC = () => {
                             <Text style={[styles.measurementValue, { color: consts.babyBlue }]}>-1.8 lbs</Text>
                         </View>
                     </View>
+                </View>
 
-                    <View style={styles.progressBarContainer}>
-                        <Text style={styles.progressLabel}>18% of goal reached</Text>
-                        <View style={styles.progressBar}>
-                            <View style={[
-                                styles.progressFill,
-                                { width: "18%", backgroundColor: consts.babyBlue }
-                            ]} />
+                <View style={styles.milestoneCard}>
+                    <Text style={styles.milestoneTitle}>Milestones</Text>
+
+                    <View style={styles.milestone}>
+                        <View style={[styles.milestoneIconContainer, { backgroundColor: `${consts.babyBlue}20` }]}>
+                            <Feather name="check-circle" size={16} color={consts.babyBlue} />
+                        </View>
+                        <View style={styles.milestoneContent}>
+                            <Text style={styles.milestoneName}>First pound lost</Text>
+                            <Text style={styles.milestoneDate}>Apr 9, 2025</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.milestone}>
+                        <View style={[styles.milestoneIconContainer, { backgroundColor: `${consts.blueGrotto}20` }]}>
+                            <Feather name="flag" size={16} color={consts.blueGrotto} />
+                        </View>
+                        <View style={styles.milestoneContent}>
+                            <Text style={styles.milestoneName}>5% of goal weight lost</Text>
+                            <Text style={styles.milestoneDate}>Expected: May 14, 2025</Text>
                         </View>
                     </View>
                 </View>
@@ -282,6 +328,7 @@ const StatsScreen: React.FC = () => {
             <ScrollView
                 style={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
             >
                 <Text style={styles.screenTitle}>Statistics</Text>
                 <Text style={styles.screenSubtitle}>Your health and nutrition insights</Text>
@@ -305,31 +352,36 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         flex: 1,
-        padding: 16,
+    },
+    scrollContent: {
+        padding: 12, // Decreased from 16
     },
     screenTitle: {
         fontSize: 24,
         fontWeight: 'bold',
         color: consts.midnightBlue,
-        marginBottom: 4,
+        marginBottom: 2, // Decreased from 4
+        paddingHorizontal: 4, // Added horizontal padding
     },
     screenSubtitle: {
         fontSize: 16,
         color: '#666',
-        marginBottom: 16,
+        marginBottom: 12, // Decreased from 16
+        paddingHorizontal: 4, // Added horizontal padding
     },
     tabSelector: {
         flexDirection: 'row',
         backgroundColor: '#f0f1f5',
         borderRadius: 20,
-        marginVertical: 16,
+        marginVertical: 10, // Decreased from 16
+        marginHorizontal: 4, // Added horizontal margin
         padding: 4,
     },
     tab: {
         flex: 1,
         paddingVertical: 10,
         alignItems: 'center',
-        borderRadius: 30,
+        borderRadius: 18,
     },
     activeTab: {
         backgroundColor: consts.white,
@@ -350,7 +402,7 @@ const styles = StyleSheet.create({
     },
     dateHeader: {
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 12, // Decreased from 16
     },
     dateText: {
         fontSize: 16,
@@ -361,19 +413,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        marginBottom: 16, // Decreased from 20
+        paddingHorizontal: 2, // Added horizontal padding
     },
     metricCard: {
         width: '48%',
         backgroundColor: consts.white,
-        borderRadius: 28,
-        padding: 16,
-        marginBottom: 16,
+        borderRadius: 20, // Decreased from 28
+        padding: 14, // Decreased from 16
+        marginBottom: 12, // Decreased from 16
         borderLeftWidth: 4,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
-        shadowRadius: 23,
+        shadowRadius: 6,
         elevation: 2,
     },
     iconContainer: {
@@ -382,18 +435,18 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: 10, // Decreased from 12
     },
     metricTitle: {
         fontSize: 14,
         color: '#666',
-        marginBottom: 4,
+        marginBottom: 3, // Decreased from 4
     },
     metricValue: {
         fontSize: 18,
         fontWeight: 'bold',
         color: consts.midnightBlue,
-        marginBottom: 6,
+        marginBottom: 5, // Decreased from 6
     },
     changeContainer: {
         flexDirection: 'row',
@@ -403,23 +456,90 @@ const styles = StyleSheet.create({
         fontSize: 12,
         marginLeft: 4,
     },
+    progressCard: {
+        backgroundColor: consts.white,
+        borderRadius: 20,
+        padding: 16,
+        marginVertical: 8, // Added spacing between cards
+        marginHorizontal: 2, // Added horizontal margin
+        shadowColor: consts.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.07,
+        shadowRadius: 6,
+        elevation: 2,
+    },
+    progressCardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    progressCardTitleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    smallIconContainer: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 8,
+    },
+    progressCardTitle: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: consts.midnightBlue,
+    },
+    progressCardValue: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    progressCardTarget: {
+        fontSize: 14,
+        fontWeight: 'normal',
+        color: '#666',
+    },
+    progressBarContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    progressBar: {
+        flex: 1,
+        height: 8, // Increased from 6
+        backgroundColor: '#f0f1f5',
+        borderRadius: 4,
+        overflow: 'hidden',
+        marginRight: 10,
+    },
+    progressFill: {
+        height: '100%',
+        borderRadius: 4,
+    },
+    progressPercentage: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#666',
+        width: 40, // Fixed width for alignment
+        textAlign: 'right',
+    },
     bottomPadding: {
-        height: 100,
+        height: 120, // Increased from 100 to account for the floating navbar
     },
     nutritionCards: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        marginBottom: 16,
     },
     macroCard: {
         width: '31%',
         backgroundColor: consts.white,
-        borderRadius: 28,
+        borderRadius: 20, // Decreased from 28
         padding: 12,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
-        shadowRadius: 23,
+        shadowRadius: 6,
         elevation: 2,
     },
     macroTitle: {
@@ -441,21 +561,37 @@ const styles = StyleSheet.create({
         color: '#999',
         marginLeft: 3,
     },
-    progressBar: {
-        height: 4,
-        backgroundColor: '#f0f1f5',
-        borderradius: 6,
-        overflow: 'hidden',
+    nutritionInfoCard: {
+        backgroundColor: '#f8f9ff',
+        borderRadius: 20,
+        padding: 16,
+        marginVertical: 10,
+        marginHorizontal: 2,
+        borderLeftWidth: 4,
+        borderLeftColor: consts.midnightBlue,
     },
-    progressFill: {
-        height: '100%',
-        borderradius: 6,
+    nutritionInfoHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    nutritionInfoTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: consts.midnightBlue,
+        marginLeft: 8,
+    },
+    nutritionInfoText: {
+        fontSize: 14,
+        color: '#555',
+        lineHeight: 20,
     },
     bodyStatsCard: {
         backgroundColor: consts.white,
-        borderRadius: 38,
+        borderRadius: 20, // Decreased from 38
         padding: 16,
-        marginVertical: 16,
+        marginVertical: 10, // Decreased from 16
+        marginHorizontal: 2,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -466,12 +602,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '600',
         color: consts.midnightBlue,
-        marginBottom: 16,
+        marginBottom: 14, // Decreased from 16
     },
     measurementRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 16,
+        marginBottom: 14, // Decreased from 16
     },
     measurement: {
         width: '48%',
@@ -479,20 +615,56 @@ const styles = StyleSheet.create({
     measurementLabel: {
         fontSize: 14,
         color: '#667085',
-        marginBottom: 4,
+        marginBottom: 3, // Decreased from 4
     },
     measurementValue: {
         fontSize: 18,
         fontWeight: '600',
         color: consts.midnightBlue,
     },
-    progressBarContainer: {
-        marginTop: 8,
+    milestoneCard: {
+        backgroundColor: consts.white,
+        borderRadius: 20,
+        padding: 16,
+        marginVertical: 10,
+        marginHorizontal: 2,
+        shadowColor: consts.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.07,
+        shadowRadius: 6,
+        elevation: 2,
     },
-    progressLabel: {
-        fontSize: 14,
+    milestoneTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: consts.midnightBlue,
+        marginBottom: 14,
+    },
+    milestone: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    milestoneIconContainer: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    milestoneContent: {
+        flex: 1,
+    },
+    milestoneName: {
+        fontSize: 15,
+        fontWeight: '500',
+        color: consts.midnightBlue,
+        marginBottom: 2,
+    },
+    milestoneDate: {
+        fontSize: 13,
         color: '#667085',
-        marginBottom: 6,
     },
 });
 
