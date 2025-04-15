@@ -26,13 +26,17 @@ interface MealCardProps {
 const MealCard: React.FC<MealCardProps> = ({ meals }) => {
     const [animation] = useState(new Animated.Value(0));
     const [flipped, setFlipped] = useState(false);
-    const [completedMeals, setCompletedMeals] = useState<{ [key: string]: boolean }>({
+    // Dynamically create completedMeals state keys for snacks
+    const snackCount = meals?.snacks?.length || 2;
+    const initialCompleted: { [key: string]: boolean } = {
         breakfast: false,
         lunch: false,
         dinner: false,
-        snack1: false,
-        snack2: false,
-    });
+    };
+    for (let i = 1; i <= snackCount; i++) {
+        initialCompleted[`snack${i}`] = false;
+    }
+    const [completedMeals, setCompletedMeals] = useState<{ [key: string]: boolean }>(initialCompleted);
 
     // Use default meals if none provided
     const defaultMeals = {
@@ -45,19 +49,8 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
     // Use provided meals or fallback to defaults
     const displayMeals = meals || defaultMeals;
 
-    // Calculate dynamic height based on number of meals
-    const calculateCardHeight = () => {
-        const baseHeight = 350; // Base height with 3 meals
-        const mealHeight = 60; // Height per additional meal/snack
-        const snacksCount = displayMeals.snacks ? displayMeals.snacks.length : 0;
-        const totalMealsHeight = baseHeight + (snacksCount * mealHeight);
-
-        return Platform.OS === 'android' ? totalMealsHeight + 20 : totalMealsHeight;
-    };
-
     const flipCard = () => {
         const toValue = flipped ? 0 : 180;
-
         Animated.timing(animation, {
             toValue,
             duration: 600,
@@ -66,31 +59,24 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
         }).start(() => setFlipped(!flipped));
     };
 
-    const frontAnimatedStyle = {
-        transform: [{ perspective: 1000 }, {
-            rotateY: animation.interpolate({
-                inputRange: [0, 180],
-                outputRange: ['0deg', '180deg'],
-            })
-        }],
-        opacity: animation.interpolate({
-            inputRange: [0, 90, 180],
-            outputRange: [1, 0, 0],
-        }),
-    };
-
-    const backAnimatedStyle = {
-        transform: [{ perspective: 1000 }, {
-            rotateY: animation.interpolate({
-                inputRange: [0, 180],
-                outputRange: ['180deg', '360deg'],
-            })
-        }],
-        opacity: animation.interpolate({
-            inputRange: [0, 90, 180],
-            outputRange: [0, 0, 1],
-        }),
-    };
+    // Interpolate rotation for front and back
+    const frontInterpolate = animation.interpolate({
+        inputRange: [0, 180],
+        outputRange: ['0deg', '180deg'],
+    });
+    const backInterpolate = animation.interpolate({
+        inputRange: [0, 180],
+        outputRange: ['180deg', '360deg'],
+    });
+    // Opacity for pointer events
+    const frontOpacity = animation.interpolate({
+        inputRange: [0, 90, 180],
+        outputRange: [1, 0, 0],
+    });
+    const backOpacity = animation.interpolate({
+        inputRange: [0, 90, 180],
+        outputRange: [0, 0, 1],
+    });
 
     const toggleMealComplete = (mealKey: string) => {
         setCompletedMeals(prev => ({
@@ -142,77 +128,82 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
     );
 
     return (
-        <View style={[styles.container, { height: calculateCardHeight() }]}>
-            <Animated.View style={[styles.card, frontAnimatedStyle]}>
-                <View style={styles.contentContainer}>
-                    <View style={styles.progressHeader}>
-                        <Text style={styles.progressText}>
-                            Today's Meals {getCompletedMeals()}/{getTotalMeals()}
-                        </Text>
-                        <View style={styles.progressBar}>
-                            <View
-                                style={[
-                                    styles.progressFill,
-                                    { width: `${progressPercentage}%` }
-                                ]}
-                            />
+        <View style={styles.container}>
+            <Animated.View
+                style={[styles.card, { transform: [{ perspective: 1000 }, { rotateY: frontInterpolate }] }]}
+                pointerEvents={flipped ? 'none' : 'auto'}
+            >
+                <Animated.View style={{ opacity: frontOpacity, flex: 1 }}>
+                    <View style={styles.contentContainer}>
+                        <View style={styles.progressHeader}>
+                            <Text style={styles.progressText}>
+                                Today's Meals {getCompletedMeals()}/{getTotalMeals()}
+                            </Text>
+                            <View style={styles.progressBar}>
+                                <View
+                                    style={[
+                                        styles.progressFill,
+                                        { width: `${progressPercentage}%` }
+                                    ]}
+                                />
+                            </View>
+                        </View>
+                        <View style={styles.mealsList}>
+                            {renderMealCheckItem('Breakfast', displayMeals.breakfast, 'breakfast')}
+                            {renderMealCheckItem('Lunch', displayMeals.lunch, 'lunch')}
+                            {renderMealCheckItem('Dinner', displayMeals.dinner, 'dinner')}
+                            {displayMeals.snacks && displayMeals.snacks.map((snack, index) => (
+                                renderMealCheckItem(
+                                    `Snack ${index + 1}`,
+                                    snack,
+                                    `snack${index + 1}`
+                                )
+                            ))}
                         </View>
                     </View>
-
-                    <View style={styles.mealsList}>
-                        {renderMealCheckItem('Breakfast', displayMeals.breakfast, 'breakfast')}
-                        {renderMealCheckItem('Lunch', displayMeals.lunch, 'lunch')}
-                        {renderMealCheckItem('Dinner', displayMeals.dinner, 'dinner')}
-
-                        {displayMeals.snacks && displayMeals.snacks.map((snack, index) => (
-                            renderMealCheckItem(
-                                `Snack ${index + 1}`,
-                                snack,
-                                `snack${index + 1}`
-                            )
-                        ))}
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            title="View Nutrition Info"
+                            onPress={flipCard}
+                            variant="primary"
+                            size="medium"
+                            fullWidth
+                        />
                     </View>
-                </View>
-
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="View Nutrition Info"
-                        onPress={flipCard}
-                        variant="primary"
-                        size="medium"
-                        fullWidth
-                    />
-                </View>
+                </Animated.View>
             </Animated.View>
-
-            <Animated.View style={[styles.card, styles.backCard, backAnimatedStyle]}>
-                <View style={styles.contentContainer}>
-                    <Text style={styles.nutritionTitle}>Nutrition Breakdown</Text>
-                    <View style={styles.nutritionContainer}>
-                        {[
-                            { label: 'Calories', value: '1,850' },
-                            { label: 'Protein', value: '125g' },
-                            { label: 'Carbs', value: '180g' },
-                            { label: 'Fats', value: '65g' },
-                            { label: 'Fiber', value: '30g' },
-                        ].map((item, i) => (
-                            <View key={i} style={styles.nutritionItem}>
-                                <Text style={styles.nutritionValue}>{item.value}</Text>
-                                <Text style={styles.nutritionLabel}>{item.label}</Text>
-                            </View>
-                        ))}
+            <Animated.View
+                style={[styles.card, styles.backCard, { transform: [{ perspective: 1000 }, { rotateY: backInterpolate }] }]}
+                pointerEvents={flipped ? 'auto' : 'none'}
+            >
+                <Animated.View style={{ opacity: backOpacity, flex: 1 }}>
+                    <View style={styles.contentContainer}>
+                        <Text style={styles.nutritionTitle}>Nutrition Breakdown</Text>
+                        <View style={styles.nutritionContainer}>
+                            {[
+                                { label: 'Calories', value: '1,850' },
+                                { label: 'Protein', value: '125g' },
+                                { label: 'Carbs', value: '180g' },
+                                { label: 'Fats', value: '65g' },
+                                { label: 'Fiber', value: '30g' },
+                            ].map((item, i) => (
+                                <View key={i} style={styles.nutritionItem}>
+                                    <Text style={styles.nutritionValue}>{item.value}</Text>
+                                    <Text style={styles.nutritionLabel}>{item.label}</Text>
+                                </View>
+                            ))}
+                        </View>
                     </View>
-                </View>
-
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="Back to Meals"
-                        onPress={flipCard}
-                        variant="outline"
-                        size="medium"
-                        fullWidth
-                    />
-                </View>
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            title="Back to Meals"
+                            onPress={flipCard}
+                            variant="outline"
+                            size="medium"
+                            fullWidth
+                        />
+                    </View>
+                </Animated.View>
             </Animated.View>
         </View>
     );
@@ -220,11 +211,11 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
 
 const styles = StyleSheet.create({
     container: {
-        // Height is now dynamically calculated
-        marginBottom: consts.spacing.xl, // Using responsive spacing
+        width: '100%',
+        alignSelf: 'stretch',
+        marginBottom: consts.spacing.xl,
     },
     card: {
-        flex: 1,
         backgroundColor: consts.white,
         borderRadius: 38,
         padding: 20,
@@ -234,16 +225,16 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
         shadowRadius: 38,
-        // No longer using justifyContent: 'space-between' - we'll manually position content
-        display: 'flex',
         flexDirection: 'column',
+        minHeight: 320,
+        maxWidth: '100%',
     },
     contentContainer: {
         flex: 1,
     },
     buttonContainer: {
         paddingTop: 16,
-        marginTop: 'auto', // Push button to bottom
+        marginTop: 'auto',
     },
     backCard: {
         position: 'absolute',

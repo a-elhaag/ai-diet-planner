@@ -13,7 +13,7 @@ const scale = (size: number): number => {
 const platformValues = {
     navbarBottom: Platform.OS === 'android' ? 20 : 0,
     contentPadding: Platform.OS === 'android' ? 110 : 90,
-    cardHeight: Platform.OS === 'android' ? 490 : 470,
+    cardHeight: Platform.OS === 'android' ? 500 : 470,
     buttonShadow: Platform.OS === 'android' ? 2 : 4,
 };
 
