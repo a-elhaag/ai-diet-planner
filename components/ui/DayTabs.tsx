@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
         borderColor: consts.blueGrotto,
     },
     freeDayTab: {
-        borderStyle: 'dashed',
         borderWidth: 1.5,
     },
     dayText: {

@@ -34,7 +34,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <UnitProvider>
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
           <View style={styles.mainContainer}>
             {renderScreen()}
             <Navbar activeTab={activeTab} onTabPress={(tab: TabName) => setActiveTab(tab)} />
@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     position: 'relative',
-    paddingBottom: 60, // Add global bottom padding for all screens to account for the floating navbar
   }
 });
 

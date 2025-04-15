@@ -351,10 +351,10 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: -30, // Added space from bottom edge
-        left: 20, // Added space from left edge
-        right: 20, // Added space from right edge
-        zIndex: 1000, // Ensure it's above other elements
+        bottom: consts.platform.navbarBottom, // Using centralized platform-specific value
+        left: consts.spacing.lg, // Using responsive spacing
+        right: consts.spacing.lg, // Using responsive spacing
+        zIndex: 1000,
     },
     navbar: {
         flexDirection: 'row',
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     fabContainer: {
         position: 'absolute',
         alignSelf: 'center',
-        bottom: 26, // Adjusted to work with floating navbar
+        bottom: Platform.OS === 'android' ? -3 : 26, 
         zIndex: 10,
     },
     fab: {

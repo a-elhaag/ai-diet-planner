@@ -299,6 +299,8 @@ const HomeScreen: React.FC = () => {
                         size="medium"
                     />
                 </View>
+
+                <View style={{ height: 100 }} />
             </ScrollView>
         </View>
     );

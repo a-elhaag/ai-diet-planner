@@ -116,6 +116,7 @@ const ProfileScreen: React.FC = () => {
 
                 {/* Add extra padding space at bottom to prevent navbar overlap */}
                 <View style={styles.bottomPadding} />
+                <View style={{ height: 100 }} />
             </ScrollView>
         </View>
     );
