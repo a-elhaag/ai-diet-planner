@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     fabContainer: {
         position: 'absolute',
         alignSelf: 'center',
-        bottom: Platform.OS === 'android' ? -3 : 26, 
+        bottom: Platform.OS === 'android' ? -4 : 26,
         zIndex: 10,
     },
     fab: {
