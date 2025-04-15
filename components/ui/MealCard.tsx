@@ -78,6 +78,22 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
         outputRange: [0, 0, 1],
     });
 
+    // Android shadow flip: only show shadow on the visible side
+    const frontShadowStyle = Platform.OS === 'android' ? {
+        elevation: 4,
+        shadowColor: consts.black,
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 38,
+    } : {};
+    const backShadowStyle = Platform.OS === 'android' ? {
+        elevation: 0,
+        shadowColor: consts.black,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0,
+        shadowRadius: 0,
+    } : {};
+
     const toggleMealComplete = (mealKey: string) => {
         setCompletedMeals(prev => ({
             ...prev,
@@ -130,7 +146,7 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
     return (
         <View style={styles.container}>
             <Animated.View
-                style={[styles.card, { transform: [{ perspective: 1000 }, { rotateY: frontInterpolate }] }]}
+                style={[styles.card, frontShadowStyle, { transform: [{ perspective: 1000 }, { rotateY: frontInterpolate }] }]}
                 pointerEvents={flipped ? 'none' : 'auto'}
             >
                 <Animated.View style={{ opacity: frontOpacity, flex: 1 }}>
@@ -173,7 +189,7 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
                 </Animated.View>
             </Animated.View>
             <Animated.View
-                style={[styles.card, styles.backCard, { transform: [{ perspective: 1000 }, { rotateY: backInterpolate }] }]}
+                style={[styles.card, styles.backCard, backShadowStyle, { transform: [{ perspective: 1000 }, { rotateY: backInterpolate }] }]}
                 pointerEvents={flipped ? 'auto' : 'none'}
             >
                 <Animated.View style={{ opacity: backOpacity, flex: 1 }}>
@@ -242,6 +258,12 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
+        ...Platform.select({
+            android: {
+                shadowOffset: { width: -2, height: 2 }, // Flip shadow horizontally
+                elevation: 2, // Slightly different elevation for effect
+            },
+        }),
     },
     progressHeader: {
         marginBottom: 16,
