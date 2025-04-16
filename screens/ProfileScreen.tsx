@@ -1,20 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Switch } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import colors from '../const/colors';
+import consts from '../const/consts';
 import Button from '../components/ui/Button';
+import { useUnit } from '../contexts/UnitContext';
 
 const ProfileScreen: React.FC = () => {
+    const { unitSystem, toggleUnitSystem, formatWeight, formatHeight } = useUnit();
+
+    // Convert default values from the hard-coded values
+    // Assuming height is 5'11" (71 inches) and weight is 185 lbs
+    const heightInInches = 71; // 5'11"
+    const weightInLbs = 185;
+
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View style={styles.profileHeader}>
                     <View style={styles.avatarContainer}>
                         <View style={styles.avatar}>
-                            <Feather name="user" size={50} color={colors.blueGrotto} />
+                            <Feather name="user" size={50} color={consts.blueGrotto} />
                         </View>
                         <TouchableOpacity style={styles.editButton}>
-                            <Feather name="edit-2" size={16} color={colors.white} />
+                            <Feather name="edit-2" size={16} color={consts.white} />
                         </TouchableOpacity>
                     </View>
                     <Text style={styles.userName}>John Doe</Text>
@@ -26,12 +34,12 @@ const ProfileScreen: React.FC = () => {
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Height</Text>
-                        <Text style={styles.infoValue}>5'11" (180 cm)</Text>
+                        <Text style={styles.infoValue}>{formatHeight(heightInInches)}</Text>
                     </View>
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Weight</Text>
-                        <Text style={styles.infoValue}>185 lbs (84 kg)</Text>
+                        <Text style={styles.infoValue}>{formatWeight(weightInLbs)}</Text>
                     </View>
 
                     <View style={styles.infoItem}>
@@ -60,6 +68,37 @@ const ProfileScreen: React.FC = () => {
                         </View>
                     </View>
                 </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>App Settings</Text>
+
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Units</Text>
+                        <View style={styles.unitToggleContainer}>
+                            <Text style={[
+                                styles.unitLabel,
+                                unitSystem === 'imperial' ? styles.activeUnitLabel : {}
+                            ]}>
+                                Imperial
+                            </Text>
+                            <Switch
+                                trackColor={{ false: consts.babyBlue, true: consts.babyBlue }}
+                                thumbColor={unitSystem === 'metric' ? consts.blueGrotto : '#f4f3f4'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={toggleUnitSystem}
+                                value={unitSystem === 'metric'}
+                                style={styles.switch}
+                            />
+                            <Text style={[
+                                styles.unitLabel,
+                                unitSystem === 'metric' ? styles.activeUnitLabel : {}
+                            ]}>
+                                Metric
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+
                 <Button
                     title='Edit Profile'
                     onPress={() => console.log('Edit Profile')}
@@ -74,6 +113,10 @@ const ProfileScreen: React.FC = () => {
                     size='medium'
                     fullWidth
                 />
+
+                {/* Add extra padding space at bottom to prevent navbar overlap */}
+                <View style={styles.bottomPadding} />
+                <View style={{ height: 100 }} />
             </ScrollView>
         </View>
     );
@@ -82,7 +125,7 @@ const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
     },
     scrollView: {
         flex: 1,
@@ -100,32 +143,32 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
-        shadowRadius: 4,
+        shadowRadius: 6,
         elevation: 3,
     },
     editButton: {
         position: 'absolute',
         bottom: 0,
         right: 0,
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
         width: 30,
         height: 30,
         borderRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 2,
-        borderColor: colors.white,
+        borderColor: consts.white,
     },
     userName: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
     },
     userStats: {
         fontSize: 16,
@@ -133,21 +176,21 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     section: {
-        backgroundColor: colors.white,
-        borderRadius: 8,
+        backgroundColor: consts.white,
+        borderRadius: 30,
         padding: 16,
         marginBottom: 20,
-        shadowColor: colors.black,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
-        shadowRadius: 4,
+        shadowRadius: 6,
         elevation: 2,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
         marginBottom: 16,
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
     },
     infoItem: {
         flexDirection: 'row',
@@ -155,6 +198,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
+        alignItems: 'center',
     },
     infoLabel: {
         fontSize: 16,
@@ -170,26 +214,26 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     tag: {
-        backgroundColor: colors.babyBlue + '30',
+        backgroundColor: consts.babyBlue + '30',
         paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 16,
+        borderRadius: 38,
         marginRight: 8,
         marginBottom: 8,
     },
     tagText: {
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         fontWeight: '500',
     },
     button: {
-        backgroundColor: colors.blueGrotto,
-        borderRadius: 8,
+        backgroundColor: consts.blueGrotto,
+        borderRadius: 30,
         padding: 16,
         alignItems: 'center',
         marginBottom: 12,
     },
     buttonText: {
-        color: colors.white,
+        color: consts.white,
         fontWeight: '600',
         fontSize: 16,
     },
@@ -201,7 +245,26 @@ const styles = StyleSheet.create({
     },
     logoutText: {
         color: '#ef4444',
-    }
+    },
+    unitToggleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    switch: {
+        marginHorizontal: 5,
+    },
+    unitLabel: {
+        fontSize: 14,
+        color: '#666',
+    },
+    activeUnitLabel: {
+        fontWeight: '600',
+        color: consts.blueGrotto,
+    },
+    bottomPadding: {
+        height: 20, // Enough space to clear the floating navbar
+        marginBottom: 10,
+    },
 });
 
 export default ProfileScreen;

@@ -5,11 +5,8 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Platform,
 } from 'react-native';
-import colors from '../../const/colors';
-import generalConst from '../../const/const';
-
+import consts from '../../const/consts';
 interface DayTabsProps {
     days: string[];
     selectedDay: number;
@@ -78,58 +75,57 @@ const DayTabs: React.FC<DayTabsProps> = ({
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 12,
-        marginBottom: 12,
-        paddingHorizontal: 12,
+        marginTop: 6, // Reduced from 12
+        marginBottom: 6, // Reduced from 12
+        paddingHorizontal: 8, // Reduced from 12
     },
     scrollContent: {
-        paddingVertical: 6,
+        paddingVertical: 3, // Reduced from 6
         alignItems: 'center',
     },
     dayTab: {
-        width: 90, // Fixed width
-        height: 60,
-        marginHorizontal: 5,
-        backgroundColor: colors.white,
-        borderRadius: generalConst.radius,
+        width: 70, // Reduced from 90
+        height: 46, // Reduced from 60
+        marginHorizontal: 3, // Reduced from 5
+        backgroundColor: consts.white,
+        borderRadius: 20, // Reduced from 26
         borderWidth: 1,
-        borderColor: colors.babyBlue,
-        overflow: 'hidden', // Keep the content within borders
+        borderColor: consts.babyBlue,
+        overflow: 'hidden',
     },
     dayTabContent: {
         width: '100%',
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 4,
+        padding: 2, // Reduced from 4
     },
     selectedDayTab: {
-        backgroundColor: colors.blueGrotto,
-        borderColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
+        borderColor: consts.blueGrotto,
     },
     freeDayTab: {
-        borderStyle: 'dashed',
         borderWidth: 1.5,
     },
     dayText: {
-        fontSize: 20,
+        fontSize: 16, // Reduced from 20
         fontWeight: '400',
-        color: colors.blueGrotto,
+        color: consts.blueGrotto,
         textAlign: 'center',
     },
     selectedDayText: {
-        color: colors.white,
+        color: consts.white,
         fontWeight: '800',
     },
     freeDayLabel: {
-        fontSize: 11,
-        marginTop: 3,
-        color: colors.blueGrotto,
+        fontSize: 9, // Reduced from 11
+        marginTop: 2, // Reduced from 3
+        color: consts.blueGrotto,
         fontStyle: 'italic',
         textAlign: 'center',
     },
     selectedFreeDayLabel: {
-        color: colors.white,
+        color: consts.white,
     },
 });
 

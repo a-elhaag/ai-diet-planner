@@ -17,13 +17,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "newArchEnabled": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon-placeholder.png",
         "backgroundColor": "#ECECEB"
-      }
+      },
+      "newArchEnabled": true
     },
     "web": {
       "favicon": "./assets/icon-placeholder.png"

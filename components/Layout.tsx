@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, StatusBar, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import Navbar from './Navbar';
-import colors from '../const/colors';
+import consts from '../const/consts';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -11,6 +11,7 @@ interface LayoutProps {
     backgroundColor?: string;
     contentPadding?: boolean;
     keyboardAvoid?: boolean;
+    initialActiveTab?: 'home' | 'stats' | 'plan' | 'profile';
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -18,10 +19,19 @@ const Layout: React.FC<LayoutProps> = ({
     noScroll = false,
     noNavbar = false,
     hideStatusBar = false,
-    backgroundColor = colors.ivory,
+    backgroundColor = consts.ivory,
     contentPadding = true,
-    keyboardAvoid = true
+    keyboardAvoid = true,
+    initialActiveTab = 'home'
 }) => {
+    // Add state for active tab
+    const [activeTab, setActiveTab] = useState<'home' | 'stats' | 'plan' | 'profile'>(initialActiveTab);
+
+    // Add handler for tab press
+    const handleTabPress = (tab: 'home' | 'stats' | 'plan' | 'profile') => {
+        setActiveTab(tab);
+    };
+
     const ContentWrapper = noScroll ? View : ScrollView;
     const contentStyles = [
         styles.content,
@@ -55,13 +65,13 @@ const Layout: React.FC<LayoutProps> = ({
                 >
                     <View style={styles.stack}>
                         {renderContent()}
-                        {!noNavbar && <Navbar />}
+                        {!noNavbar && <Navbar activeTab={activeTab} onTabPress={handleTabPress} />}
                     </View>
                 </KeyboardAvoidingView>
             ) : (
                 <View style={[styles.stack, { flex: 1 }]}>
                     {renderContent()}
-                    {!noNavbar && <Navbar />}
+                    {!noNavbar && <Navbar activeTab={activeTab} onTabPress={handleTabPress} />}
                 </View>
             )}
         </SafeAreaView>
@@ -79,7 +89,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     contentPadding: {
-        paddingBottom: 80, // Account for navbar height
+        paddingBottom: 50, // Increased padding to account for navbar and ensure content doesn't get hidden
     },
     stack: {
         flex: 1,

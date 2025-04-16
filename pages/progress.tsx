@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Layout from '../components/Layout'; // Corrected import path with proper capitalization
-import colors from '../const/colors';
+import consts from '../const/consts';
 
 export default function Progress() {
     return (
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 8,
     },
     subtitle: {

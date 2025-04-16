@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import colors from '../const/colors';
+import consts from '../const/consts';
 import DayTabs from '../components/ui/DayTabs';
 import MealCard from '../components/ui/MealCard';
 import Button from '../components/ui/Button';
@@ -70,6 +70,8 @@ const PlanScreen: React.FC = () => {
                     fullWidth
                 />
 
+                {/* Extra padding space to avoid navbar overlap */}
+                <View style={styles.bottomSpacer} />
 
             </ScrollView>
         </View>
@@ -79,7 +81,7 @@ const PlanScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
     },
     scrollView: {
         flex: 1,
@@ -88,23 +90,26 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 20,
     },
     tabsWrapper: {
         marginBottom: 16,
     },
     button: {
-        backgroundColor: colors.blueGrotto,
-        borderRadius: 8,
+        backgroundColor: consts.blueGrotto,
+        borderRadius: 30,
         padding: 16,
         alignItems: 'center',
         marginVertical: 24,
     },
     buttonText: {
-        color: colors.white,
+        color: consts.white,
         fontWeight: '600',
         fontSize: 16,
+    },
+    bottomSpacer: {
+        height: 25,
     }
 });
 

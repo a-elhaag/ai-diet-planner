@@ -2,7 +2,7 @@ import React from 'react';
 import Layout from '../components/Layout';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import colors from '../const/colors';
+import consts from '../const/consts';
 
 interface ActionItemProps {
     icon: React.ComponentProps<typeof Feather>['name'];
@@ -15,7 +15,7 @@ const ActionItem: React.FC<ActionItemProps> = ({ icon, title, description, onPre
     return (
         <TouchableOpacity style={styles.actionItem} onPress={onPress}>
             <View style={styles.actionIcon}>
-                <Feather name={icon} size={22} color={colors.midnightBlue} />
+                <Feather name={icon} size={22} color={consts.midnightBlue} />
             </View>
             <View style={styles.actionContent}>
                 <Text style={styles.actionTitle}>{title}</Text>
@@ -127,19 +127,19 @@ export default function Settings() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.ivory,
+        backgroundColor: consts.ivory,
     },
     header: {
         padding: 20,
         paddingTop: 40,
-        backgroundColor: colors.white,
+        backgroundColor: consts.white,
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(0,0,0,0.05)',
     },
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 8,
     },
     subtitle: {
@@ -153,17 +153,17 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 12,
         paddingHorizontal: 20,
     },
     actionStack: {
-        backgroundColor: colors.white,
-        borderRadius: 16,
-        shadowColor: colors.black,
+        backgroundColor: consts.white,
+        borderRadius: 38,
+        shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
-        shadowRadius: 10,
+        shadowRadius: 20,
         elevation: 2,
         marginHorizontal: 16,
         overflow: 'hidden',
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     actionIcon: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        borderRadius: 38,
         backgroundColor: 'rgba(132, 199, 242, 0.15)', // Using babyBlue with opacity
         justifyContent: 'center',
         alignItems: 'center',
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     actionTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: colors.midnightBlue,
+        color: consts.midnightBlue,
         marginBottom: 4,
     },
     actionDescription: {

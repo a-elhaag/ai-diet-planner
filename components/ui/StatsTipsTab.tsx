@@ -5,7 +5,7 @@ import {
     StyleSheet,
     TouchableOpacity
 } from 'react-native';
-import colors from '../../const/colors';
+import consts from '../../const/consts';
 
 interface StatsTipsTabProps {
     activeTab: string;
@@ -44,11 +44,15 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
                         <Text style={styles.statsTitle}>Weekly Progress</Text>
                         <View style={styles.statsRow}>
                             <View style={styles.statItem}>
-                                <Text style={styles.statValue}>5/7</Text>
+                                <View style={styles.statBubble}>
+                                    <Text style={styles.statValue}>5/7</Text>
+                                </View>
                                 <Text style={styles.statLabel}>Days on Plan</Text>
                             </View>
                             <View style={styles.statItem}>
-                                <Text style={styles.statValue}>85%</Text>
+                                <View style={[styles.statBubble, styles.secondaryBubble]}>
+                                    <Text style={styles.statValue}>85%</Text>
+                                </View>
                                 <Text style={styles.statLabel}>Adherence</Text>
                             </View>
                         </View>
@@ -56,7 +60,9 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
                 ) : (
                     <View style={styles.tipsContent}>
                         <View style={styles.aiIconContainer}>
-                            <Text style={styles.aiIcon}>🤖</Text>
+                            <View style={styles.aiIconBubble}>
+                                <Text style={styles.aiIcon}>🤖</Text>
+                            </View>
                         </View>
                         <Text style={styles.tipText}>
                             {tips}
@@ -70,50 +76,53 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
 
 const styles = StyleSheet.create({
     container: {
-        marginVertical: 0, // Increased from 16
+        marginVertical: 0,
+        aspectRatio: 2.5, // Add aspect ratio for consistent sizing
     },
     tabs: {
         flexDirection: 'row',
-        borderRadius: 10, // Increased from 8
-        backgroundColor: '#E0E0E0',
+        borderRadius: consts.radius, // Use radius from constants
+        backgroundColor: consts.ivory,
         overflow: 'hidden',
     },
     tab: {
         flex: 1,
-        paddingVertical: 14, // Increased from 12
+        paddingVertical: 14,
         alignItems: 'center',
     },
     activeTab: {
-        backgroundColor: colors.blueGrotto,
+        backgroundColor: consts.blueGrotto,
     },
     tabText: {
         fontWeight: '600',
-        fontSize: 16, // Added explicit font size
-        color: '#666',
+        fontSize: 16,
+        color: consts.midnightBlue,
+        opacity: 0.7,
     },
     activeTabText: {
-        color: 'white',
+        color: consts.white,
+        opacity: 1,
     },
     contentContainer: {
-        backgroundColor: 'white',
-        borderRadius: 16, // Increased from 12
-        padding: 20, // Increased from 16
-        marginTop: 20, // Increased from 16
-        minHeight: 140, // Increased from 120
-        elevation: 3, // Increased from 2
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 }, // Slightly larger shadow
+        backgroundColor: consts.white,
+        borderRadius: consts.radius,
+        padding: 20,
+        marginTop: 20,
+        minHeight: 140,
+        elevation: 3,
+        shadowColor: consts.black,
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.12,
-        shadowRadius: 3,
+        shadowRadius: 23,
     },
     statsContent: {
         justifyContent: 'center',
     },
     statsTitle: {
-        fontSize: 18, // Increased from 16
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 20, // Increased from 16
-        color: '#333',
+        marginBottom: 20,
+        color: consts.midnightBlue,
     },
     statsRow: {
         flexDirection: 'row',
@@ -122,31 +131,54 @@ const styles = StyleSheet.create({
     statItem: {
         alignItems: 'center',
     },
+    statBubble: {
+        width: 70,
+        height: 70,
+        backgroundColor: consts.blueGrotto,
+        borderRadius: 35, // Fully circular
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    secondaryBubble: {
+        backgroundColor: consts.babyBlue,
+    },
     statValue: {
-        fontSize: 28, // Increased from 24
+        fontSize: 28,
         fontWeight: 'bold',
-        color: colors.blueGrotto,
+        color: consts.white,
     },
     statLabel: {
-        fontSize: 16, // Increased from 14
-        color: '#666',
-        marginTop: 6, // Increased from 4
+        fontSize: 16,
+        color: consts.midnightBlue,
+        marginTop: 6,
+        fontWeight: '500',
     },
     tipsContent: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     aiIconContainer: {
-        marginRight: 16, // Increased from 12
+        marginRight: 16,
+    },
+    aiIconBubble: {
+        width: 60,
+        height: 60,
+        backgroundColor: consts.ivory,
+        borderRadius: 30, // Fully circular
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: consts.borderWidth,
+        borderColor: 'rgba(0,0,0,0.05)',
     },
     aiIcon: {
-        fontSize: 38, // Increased from 32
+        fontSize: 30,
     },
     tipText: {
         flex: 1,
-        fontSize: 16, // Increased from 15
-        color: '#333',
-        lineHeight: 24, // Increased from 22
+        fontSize: 16,
+        color: consts.midnightBlue,
+        lineHeight: 24,
     },
 });
 
