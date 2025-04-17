@@ -9,7 +9,7 @@ import Button from '../components/ui/Button';
 const dietOptions = ['balanced', 'low-carb', 'high-protein', 'vegan'];
 const allergyOptions = ['gluten', 'peanuts', 'dairy', 'soy'];
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
+const API_URL = "http://192.168.1.64:3000";
 export default function SignUpScreen() {
   const navigation = useNavigation();
 
@@ -32,11 +32,12 @@ export default function SignUpScreen() {
       Alert.alert('Error', 'Please fill out all required fields.');
       return;
     }
-
+  
+    // Collect all the user data
     const userData = {
-      id: 'userId-uuid',
-      email,
       name,
+      email,
+      password,
       preferences: {
         dietType,
         dailyCalories,
@@ -44,12 +45,30 @@ export default function SignUpScreen() {
         freeDay,
       },
     };
-
+  
+    // Print the data to the console (or send to backend)
     console.log('User Data:', userData);
-    Alert.alert('Success', 'Account created!');
-    navigation.navigate('MainApp' as never);
+  
+    // Example: Send the data to your backend API (replace with your backend URL)
+    fetch(`${API_URL}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Signup successful:', data);
+        Alert.alert('Success', 'Account created!');
+        navigation.navigate('MainApp' as never);  // Redirect to main app screen
+      })
+      .catch((error) => {
+        console.error('Error during signup:', error);
+        Alert.alert('Error', 'Something went wrong!');
+      });
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
