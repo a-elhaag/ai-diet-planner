@@ -97,6 +97,51 @@ app.post("/signup", async (req: Request, res: Response): Promise<void> => {
     res.status(500).send("Something went wrong while creating the user.");
   }
 });
+app.post("/signin", async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400).send("Please provide both email and password.");
+    return;
+  }
+
+  try {
+    await sql.connect(config);
+
+    const result = await sql.query`SELECT * FROM Users WHERE email = ${email}`;
+    const user = result.recordset[0];
+
+    if (!user) {
+      res.status(401).send("Invalid email or password.");
+      return;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      res.status(401).send("Invalid email or password.");
+      return;
+    }
+
+    res.status(200).json({
+      message: "Sign-in successful!",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        preferences: {
+          dietType: user.dietType,
+          dailyCalories: user.dailyCalories,
+          allergies: user.allergies,
+          freeDay: user.freeDay
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error("Error during sign-in:", err);
+    res.status(500).send("Something went wrong during sign-in.");
+  }
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
