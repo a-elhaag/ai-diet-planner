@@ -30,5 +30,10 @@
     "web": {
       "favicon": "./assets/icon-placeholder.png"
     }
+    ,
+      "expo": {
+        "icon": "./assets/icon-placeholder.png"
+      }
+    
   }
 }

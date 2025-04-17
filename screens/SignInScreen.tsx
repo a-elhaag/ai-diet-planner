@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../components/ui/Button';
 
 export default function SignInScreen() {
   const navigation = useNavigation();
@@ -34,9 +35,7 @@ export default function SignInScreen() {
         value={password}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
+             <Button title="Create Account" variant="primary" size="large" onPress={handleSignIn} />
 
       <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
         <Text style={styles.switchText}>Don't have an account? Sign Up</Text>
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   switchText: {
-    color: '#0066cc',
+    color: '#0476D0',
     textAlign: 'center',
     marginTop: 20,
   },
