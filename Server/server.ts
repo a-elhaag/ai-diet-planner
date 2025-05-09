@@ -4,9 +4,32 @@ import sql, { config as SqlConfig } from "mssql";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import path from "path";
-dotenv.config({ path: path.resolve(__dirname, ".env") });
-const API_URL = "http://192.168.1.64:3000";
+import os from "os";
 
+// Load .env variables
+dotenv.config({ path: path.resolve(__dirname, ".env") });
+
+// Get local IPv4 address
+function getLocalIP(): string {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    const netInterface = interfaces[name];
+    if (!netInterface) continue;
+
+    for (const net of netInterface) {
+      if (net.family === "IPv4" && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return "localhost";
+}
+
+const localIP = getLocalIP();
+const PORT = parseInt(process.env.PORT || "3000", 10);
+const API_URL = `http://${localIP}:${PORT}`;
+
+console.log(`API URL: ${API_URL}`);
 
 const app = express();
 app.use(cors());
@@ -16,7 +39,7 @@ const config: SqlConfig = {
   user: process.env.DB_USER!,
   password: process.env.DB_PASSWORD!,
   server: process.env.DB_SERVER!,
-  port: parseInt(process.env.DB_PORT || "1433"), // optional, default is 1433
+  port: parseInt(process.env.DB_PORT || "1433", 10),
   database: process.env.DB_NAME!,
   options: {
     encrypt: true,
@@ -91,12 +114,13 @@ app.post("/signup", async (req: Request, res: Response): Promise<void> => {
     `;
 
     res.status(201).json({ message: "User created successfully!" });
-
   } catch (err) {
     console.error("Error during sign-up:", err);
     res.status(500).send("Something went wrong while creating the user.");
   }
 });
+
+// Sign in
 app.post("/signin", async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
@@ -132,19 +156,17 @@ app.post("/signin", async (req: Request, res: Response): Promise<void> => {
           dietType: user.dietType,
           dailyCalories: user.dailyCalories,
           allergies: user.allergies,
-          freeDay: user.freeDay
-        }
-      }
+          freeDay: user.freeDay,
+        },
+      },
     });
-
   } catch (err) {
     console.error("Error during sign-in:", err);
     res.status(500).send("Something went wrong during sign-in.");
   }
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Backend server is running on http://localhost:${PORT}`);
+// Start server on all interfaces (so friends can connect)
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Backend server is running at ${API_URL}`);
 });

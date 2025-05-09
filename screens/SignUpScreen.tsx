@@ -6,10 +6,15 @@ import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 import Button from '../components/ui/Button';
+
 const dietOptions = ['balanced', 'low-carb', 'high-protein', 'vegan'];
 const allergyOptions = ['gluten', 'peanuts', 'dairy', 'soy'];
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const API_URL = "http://192.168.1.64:3000";
+import Config from 'react-native-config';
+
+const API_URL = Config.API_URL || 
+  process.env.API_URL || // For other environments
+  'http://192.168.1.64:3000'; // Default fallback for Android emulator
 export default function SignUpScreen() {
   const navigation = useNavigation();
 
@@ -50,25 +55,29 @@ export default function SignUpScreen() {
     console.log('User Data:', userData);
   
     // Example: Send the data to your backend API (replace with your backend URL)
-    fetch(`${API_URL}/signup`, {
+ const handleSignUp = async () => {
+  try {
+    const response = await fetch(`${API_URL}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(userData),
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Signup successful:', data);
-        Alert.alert('Success', 'Account created!');
-        navigation.navigate('MainApp' as never);  // Redirect to main app screen
-      })
-      .catch((error) => {
-        console.error('Error during signup:', error);
-        Alert.alert('Error', 'Something went wrong!');
-      });
+    });
+
+    const data = await response.json(); // Always parse JSON
+    console.log('Full response:', { status: response.status, data });
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Signup failed');
+    }
+    
+    Alert.alert('Success', 'Account created!');
+  } catch (error) {
+    console.error('Full error:', error);
+    }
   };
-  
+  };
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sign Up</Text>

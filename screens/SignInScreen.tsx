@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../components/ui/Button';
-const API_URL = "http://192.168.1.64:3000";
+import Config from 'react-native-config';
+
+const API_URL = Config.API_URL || 
+  process.env.API_URL || // For other environments
+  'http://10.0.2.2:3000'; // Default fallback for Android emulator
+
 export default function SignInScreen() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
