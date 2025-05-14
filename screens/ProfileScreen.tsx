@@ -154,7 +154,7 @@ const ProfileScreen: React.FC = () => {
                     </View>
                 </View>
 
-                <View style={styles.section}>
+                {/* <View style={styles.section}>
                     <Text style={styles.sectionTitle}>App Settings</Text>
                     <View style={styles.settingItem}>
                         <Text style={styles.settingLabel}>Units</Text>
@@ -174,7 +174,7 @@ const ProfileScreen: React.FC = () => {
                             </Text>
                         </View>
                     </View>
-                </View>
+                </View> */}
 
                 {/* Add bottom padding for navbar */}
                 <View style={styles.navbarSpacing} />

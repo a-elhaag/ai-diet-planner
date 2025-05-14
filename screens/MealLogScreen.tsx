@@ -108,7 +108,7 @@ const MealLogScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: consts.white,
+        backgroundColor: consts.ivory,
         paddingBottom: 100, // Add padding to account for navbar height
     },
     header: {
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     messagesContainer: {
         flex: 1,
         padding: 16,
-        paddingBottom: 100,
+        paddingBottom: 80, // Add extra padding to prevent messages from being hidden behind input
     },
     messageContainer: {
         marginBottom: 16,
@@ -172,49 +172,39 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         flexDirection: 'row',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        padding: 16,
         backgroundColor: consts.white,
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(0,0,0,0.1)',
         alignItems: 'flex-end',
         position: 'absolute',
-        bottom: 100,
+        bottom:100, // Position above navbar
         left: 0,
         right: 0,
         shadowColor: consts.black,
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 8,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(0,0,0,0.05)',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
     },
     input: {
         flex: 1,
         backgroundColor: consts.ivory,
-        borderRadius: 25,
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        paddingRight: 44,
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        paddingRight: 40,
         fontSize: 16,
         maxHeight: 100,
-        marginRight: 12,
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.08)',
+        marginRight: 10,
     },
     sendButton: {
         backgroundColor: consts.blueGrotto,
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: consts.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 3,
     },
 });
 
