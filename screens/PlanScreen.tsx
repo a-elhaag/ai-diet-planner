@@ -1,56 +1,83 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import consts from '../const/consts';
 import DayTabs from '../components/ui/DayTabs';
 import MealCard from '../components/ui/MealCard';
 import Button from '../components/ui/Button';
+import { useAuth } from '../contexts/AuthContext';
 
 const PlanScreen: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState(0);
+    const { user } = useAuth();
 
-    // Mock meal data
+    // Generate meals based on user preferences
+    const generateMealPlan = () => {
+        // Here you would typically make an API call to your AI service
+        // For now, we'll just show an alert with the user preferences
+        Alert.alert(
+            "Generating Meal Plan",
+            `Creating a meal plan based on:\n\n` +
+            `Goal: ${user?.goal}\n` +
+            `Activity Level: ${user?.activityLevel}\n` +
+            `Dietary Restrictions: ${user?.dietaryRestrictions.join(', ')}`
+        );
+    };
+
+    // Mock meal data - in a real app, this would come from your AI service
     const weekMeals = [
         {
-            breakfast: "Greek yogurt with berries and honey",
-            lunch: "Grilled chicken salad with avocado",
-            dinner: "Baked salmon with roasted vegetables"
+            breakfast: `${user?.dietaryRestrictions.includes('Vegan') ? 'Vegan yogurt' : 'Greek yogurt'} with berries and honey`,
+            lunch: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Grilled tofu' : 'Grilled chicken'} salad with avocado`,
+            dinner: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Grilled portobello' : 'Baked salmon'} with roasted vegetables`,
+            snacks: ["Apple with almond butter", "Protein shake"]
         },
         {
             breakfast: "Overnight oats with nuts and fruits",
             lunch: "Quinoa bowl with mixed vegetables and tofu",
-            dinner: "Lean beef stir-fry with brown rice"
+            dinner: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Tempeh' : 'Lean beef'} stir-fry with brown rice`,
+            snacks: ["Greek yogurt", "Mixed nuts"]
         },
         {
-            breakfast: "Scrambled eggs with spinach",
-            lunch: "Tuna salad wrap",
-            dinner: "Grilled chicken with sweet potatoes"
+            breakfast: `${user?.dietaryRestrictions.includes('Vegan') ? 'Tofu scramble' : 'Scrambled eggs'} with spinach`,
+            lunch: `${user?.dietaryRestrictions.includes('Vegan') ? 'Chickpea salad' : 'Tuna salad'} wrap`,
+            dinner: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Grilled tempeh' : 'Grilled chicken'} with sweet potatoes`,
+            snacks: ["Protein bar", "Orange"]
         },
         {
             breakfast: "Protein smoothie with banana",
             lunch: "Mediterranean chickpea salad",
-            dinner: "Baked cod with roasted vegetables"
+            dinner: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Grilled tofu' : 'Baked cod'} with roasted vegetables`,
+            snacks: ["Cottage cheese with berries", "Carrot sticks"]
         },
         {
-            breakfast: "Avocado toast with eggs",
-            lunch: "Turkey and vegetable soup",
-            dinner: "Grilled steak with asparagus"
+            breakfast: `${user?.dietaryRestrictions.includes('Vegan') ? 'Avocado toast' : 'Avocado toast with eggs'}`,
+            lunch: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Vegetable soup' : 'Turkey and vegetable soup'}`,
+            dinner: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Grilled portobello' : 'Grilled steak'} with asparagus`,
+            snacks: ["Apple", "Protein balls"]
         },
         {
-            breakfast: "Pancakes with maple syrup",
-            lunch: "Burger with sweet potato fries",
-            dinner: "Pizza with side salad"
+            breakfast: `${user?.dietaryRestrictions.includes('Vegan') ? 'Vegan pancakes' : 'Pancakes'} with maple syrup`,
+            lunch: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Veggie burger' : 'Burger'} with sweet potato fries`,
+            dinner: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Cauliflower crust pizza' : 'Pizza'} with side salad`,
+            snacks: ["Mixed berries", "Trail mix"]
         },
         {
-            breakfast: "French toast with fruit",
+            breakfast: `${user?.dietaryRestrictions.includes('Vegan') ? 'Vegan french toast' : 'French toast'} with fruit`,
             lunch: "Veggie wrap with hummus",
-            dinner: "Grilled fish with roasted potatoes"
+            dinner: `${user?.dietaryRestrictions.includes('Vegetarian') ? 'Grilled tofu' : 'Grilled fish'} with roasted potatoes`,
+            snacks: ["Banana", "Almonds"]
         }
     ];
 
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
-                <Text style={styles.header}>Weekly Meal Plan</Text>
+                <View style={styles.headerContainer}>
+                    <Text style={styles.header}>Weekly Meal Plan</Text>
+                    <Text style={styles.subheader}>
+                        Based on your {user?.goal.toLowerCase()} goal
+                    </Text>
+                </View>
 
                 <View style={styles.tabsWrapper}>
                     <DayTabs
@@ -62,17 +89,18 @@ const PlanScreen: React.FC = () => {
 
                 <MealCard meals={weekMeals[selectedDay]} />
 
-                <Button
-                    title="Create New Diet Plan"
-                    onPress={() => console.log('new diet plan created')}
-                    variant="primary"
-                    size="medium"
-                    fullWidth
-                />
+                <View style={styles.buttonContainer}>
+                    <Button
+                        title="Generate New Meal Plan"
+                        onPress={generateMealPlan}
+                        variant="primary"
+                        size="medium"
+                        fullWidth
+                    />
+                </View>
 
                 {/* Extra padding space to avoid navbar overlap */}
-                <View style={styles.bottomSpacer} />
-
+                <View style={{ height: consts.platform.contentPadding }} />
             </ScrollView>
         </View>
     );
@@ -81,35 +109,31 @@ const PlanScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: consts.ivory,
+        backgroundColor: consts.white,
     },
     scrollView: {
         flex: 1,
-        padding: 16,
+        padding: consts.spacing.lg,
+    },
+    headerContainer: {
+        marginBottom: consts.spacing.lg,
     },
     header: {
-        fontSize: 24,
+        fontSize: consts.font.xxlarge,
         fontWeight: 'bold',
         color: consts.midnightBlue,
-        marginBottom: 20,
+        marginBottom: consts.spacing.xs,
+    },
+    subheader: {
+        fontSize: consts.font.medium,
+        color: consts.blueGrotto,
     },
     tabsWrapper: {
-        marginBottom: 16,
+        marginBottom: consts.spacing.lg,
     },
-    button: {
-        backgroundColor: consts.blueGrotto,
-        borderRadius: 30,
-        padding: 16,
-        alignItems: 'center',
-        marginVertical: 24,
-    },
-    buttonText: {
-        color: consts.white,
-        fontWeight: '600',
-        fontSize: 16,
-    },
-    bottomSpacer: {
-        height: 25,
+    buttonContainer: {
+        marginTop: consts.spacing.xl,
+        marginBottom: consts.spacing.lg,
     }
 });
 

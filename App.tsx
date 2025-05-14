@@ -2,26 +2,36 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './screens/HomeScreen';
-import StatsScreen from './screens/StatsScreen';
 import PlanScreen from './screens/PlanScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import Navbar from './components/Navbar';
+import MealLogScreen from './screens/MealLogScreen';
+import SignInScreen from './screens/SignInScreen';
+import SignUpScreen from './screens/SignUpScreen';
+import Navbar, { TabName } from './components/Navbar';
 import consts from './const/consts';
 import { UnitProvider } from './contexts/UnitContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
-// Define tab types for better type safety
-type TabName = 'home' | 'stats' | 'plan' | 'profile';
-
-export default function App() {
+function MainApp() {
   const [activeTab, setActiveTab] = useState<TabName>('home');
+  const [showSignUp, setShowSignUp] = useState(false);
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null; // Or a loading spinner
+  }
+
+  if (!user) {
+    return showSignUp ? <SignUpScreen /> : <SignInScreen onSignUpPress={() => setShowSignUp(true)} />;
+  }
 
   // Render the current screen based on active tab
   const renderScreen = () => {
     switch (activeTab) {
       case 'home':
         return <HomeScreen />;
-      case 'stats':
-        return <StatsScreen />;
+      case 'offplan':
+        return <MealLogScreen />;
       case 'plan':
         return <PlanScreen />;
       case 'profile':
@@ -32,15 +42,23 @@ export default function App() {
   };
 
   return (
+    <View style={styles.mainContainer}>
+      {renderScreen()}
+      <Navbar activeTab={activeTab} onTabPress={setActiveTab} />
+    </View>
+  );
+}
+
+export default function App() {
+  return (
     <SafeAreaProvider>
-      <UnitProvider>
-        <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-          <View style={styles.mainContainer}>
-            {renderScreen()}
-            <Navbar activeTab={activeTab} onTabPress={(tab: TabName) => setActiveTab(tab)} />
-          </View>
-        </SafeAreaView>
-      </UnitProvider>
+      <AuthProvider>
+        <UnitProvider>
+          <SafeAreaView style={styles.safeArea}>
+            <MainApp />
+          </SafeAreaView>
+        </UnitProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

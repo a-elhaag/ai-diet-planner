@@ -10,22 +10,20 @@ import {
 } from 'react-native';
 import DayTabs from '../components/ui/DayTabs';
 import MealCard from '../components/ui/MealCard';
-import StatsTipsTab from '../components/ui/StatsTipsTab';
 import Button from '../components/ui/Button';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
+import { useAuth } from '../contexts/AuthContext';
+import { useUnit } from '../contexts/UnitContext';
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
-    const [userName, setUserName] = useState('John'); // Default name, would come from user profile
-    const [selectedTab, setSelectedTab] = useState<'meals' | 'stats'>('meals');
+    const { user } = useAuth();
+    const { formatWeight } = useUnit();
     const [selectedDay, setSelectedDay] = useState(0);
-    const [activeStatsTab, setActiveStatsTab] = useState<'stats' | 'tips'>('stats');
-    const [progress, setProgress] = useState(76); // Mock progress percentage
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
-    const progressAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         Animated.parallel([
@@ -38,32 +36,9 @@ const HomeScreen: React.FC = () => {
                 toValue: 0,
                 duration: 800,
                 useNativeDriver: true,
-            }),
-            Animated.timing(progressAnim, {
-                toValue: progress,
-                duration: 1500,
-                useNativeDriver: false,
             }),
         ]).start();
     }, []);
-
-    useEffect(() => {
-        fadeAnim.setValue(0);
-        slideAnim.setValue(30);
-
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 500,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, [selectedTab]);
 
     const weekMeals = [
         {
@@ -110,10 +85,6 @@ const HomeScreen: React.FC = () => {
         }
     ];
 
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
     const nutritionSummary = {
         calories: 1850,
         protein: 120,
@@ -143,36 +114,23 @@ const HomeScreen: React.FC = () => {
 
     const renderHeader = () => (
         <View style={styles.header}>
-            <View style={styles.headerTextContainer}>
-                <Text style={styles.greeting}>Hello, {userName}!</Text>
-                <Text style={styles.date}>{`${daysOfWeek[dayOfWeek]}, ${today.toLocaleDateString()}`}</Text>
+            <View style={styles.headerContent}>
+                <View>
+                    <Text style={styles.greeting}>Hello,</Text>
+                    <Text style={styles.userName}>{user?.name || 'User'}</Text>
+                </View>
+                <View style={styles.statsPreview}>
+                    <View style={styles.statItem}>
+                        <Text style={styles.statValue}>{formatWeight(user?.weight || 0)}</Text>
+                        <Text style={styles.statLabel}>Current Weight</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.statItem}>
+                        <Text style={styles.statValue}>{user?.goal}</Text>
+                        <Text style={styles.statLabel}>Goal</Text>
+                    </View>
+                </View>
             </View>
-
-            <Animated.View
-                style={[
-                    styles.progressContainer,
-                    { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
-                ]}
-            >
-                <View style={styles.progressCircle}>
-                    <Animated.View
-                        style={[
-                            styles.progressFill,
-                            {
-                                width: progressAnim.interpolate({
-                                    inputRange: [0, 100],
-                                    outputRange: ['0%', '100%']
-                                })
-                            }
-                        ]}
-                    />
-                    <Text style={styles.progressText}>{`${progress}%`}</Text>
-                </View>
-                <View style={styles.progressInfo}>
-                    <Text style={styles.progressLabel}>Today's Plan</Text>
-                    <Text style={styles.progressSubtext}>You're doing great!</Text>
-                </View>
-            </Animated.View>
         </View>
     );
 
@@ -262,43 +220,19 @@ const HomeScreen: React.FC = () => {
                 {renderHeader()}
 
                 <View style={styles.tabsWrapper}>
-                    {selectedTab === 'meals' && (
-                        <DayTabs
-                            days={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
-                            selectedDay={selectedDay}
-                            onSelectDay={handleDaySelect}
-                        />
-                    )}
+                    <DayTabs
+                        days={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+                        selectedDay={selectedDay}
+                        onSelectDay={handleDaySelect}
+                    />
                 </View>
 
                 <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-                    {selectedTab === 'meals' ? (
-                        <>
-                            <MealCard meals={weekMeals[selectedDay]} />
-                            {renderNutritionSummary()}
-                            {renderWaterIntake()}
-                        </>
-                    ) : (
-                        <>
-                            <StatsTipsTab
-                                activeTab={activeStatsTab}
-                                setActiveTab={(tab) => setActiveStatsTab(tab as 'stats' | 'tips')}
-                            />
-                            {renderTip()}
-                        </>
-                    )}
+                    <MealCard meals={weekMeals[selectedDay]} />
+                    {renderNutritionSummary()}
+                    {renderWaterIntake()}
+                    {renderTip()}
                 </Animated.View>
-
-                {renderTip()}
-
-                <View style={styles.buttonsContainer}>
-                    <Button
-                        title={selectedTab === 'meals' ? "View Stats" : "View Meals"}
-                        onPress={() => setSelectedTab(selectedTab === 'meals' ? 'stats' : 'meals')}
-                        variant="primary"
-                        size="medium"
-                    />
-                </View>
 
                 <View style={{ height: 100 }} />
             </ScrollView>
@@ -318,7 +252,7 @@ const styles = StyleSheet.create({
     header: {
         marginBottom: 20,
     },
-    headerTextContainer: {
+    headerContent: {
         marginBottom: 16,
     },
     greeting: {
@@ -327,60 +261,33 @@ const styles = StyleSheet.create({
         color: consts.midnightBlue,
         marginBottom: 4,
     },
-    date: {
-        fontSize: 16,
-        color: '#666',
+    userName: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: consts.blueGrotto,
     },
-    progressContainer: {
+    statsPreview: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: consts.white,
-        borderRadius: 28,
-        padding: 16,
-        shadowColor: consts.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 2,
-        marginVertical: 8,
+        marginTop: 16,
     },
-    progressCircle: {
-        width: 60,
-        height: 30,
-        borderRadius: 15,
-        backgroundColor: '#f1f5f9',
-        justifyContent: 'center',
+    statItem: {
         alignItems: 'center',
-        marginRight: 16,
-        overflow: 'hidden',
-        position: 'relative',
     },
-    progressFill: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        backgroundColor: consts.blueGrotto,
-        borderRadius: 15,
-    },
-    progressText: {
-        fontSize: 14,
+    statValue: {
+        fontSize: 18,
         fontWeight: '700',
-        color: consts.midnightBlue,
-        zIndex: 1,
+        color: consts.blueGrotto,
     },
-    progressInfo: {
-        flex: 1,
-    },
-    progressLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: consts.midnightBlue,
-        marginBottom: 2,
-    },
-    progressSubtext: {
+    statLabel: {
         fontSize: 14,
         color: '#666',
+    },
+    statDivider: {
+        width: 1,
+        height: 40,
+        backgroundColor: '#ccc',
+        marginHorizontal: 16,
     },
     tabsWrapper: {
         marginBottom: 16,
@@ -496,10 +403,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 22,
         color: '#4b5563',
-    },
-    buttonsContainer: {
-        marginTop: 16,
-        marginBottom: 15, // Increased from 80 to ensure content doesn't overlap with navbar
     },
 });
 

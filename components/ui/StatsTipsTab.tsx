@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    Animated
 } from 'react-native';
 import consts from '../../const/consts';
 
@@ -13,8 +14,15 @@ interface StatsTipsTabProps {
 }
 
 const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) => {
-    // Mock data
-    const tips = "Try to drink water 30 minutes before meals to help with portion control and improve digestion.";
+    const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    }, [activeTab]);
 
     return (
         <View style={styles.container}>
@@ -38,7 +46,7 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.contentContainer}>
+            <Animated.View style={[styles.contentContainer, { opacity: fadeAnim }]}>
                 {activeTab === 'stats' ? (
                     <View style={styles.statsContent}>
                         <Text style={styles.statsTitle}>Weekly Progress</Text>
@@ -65,11 +73,11 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
                             </View>
                         </View>
                         <Text style={styles.tipText}>
-                            {tips}
+                            Try to drink water 30 minutes before meals to help with portion control and improve digestion.
                         </Text>
                     </View>
                 )}
-            </View>
+            </Animated.View>
         </View>
     );
 };
@@ -77,11 +85,11 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
 const styles = StyleSheet.create({
     container: {
         marginVertical: 0,
-        aspectRatio: 2.5, // Add aspect ratio for consistent sizing
+        aspectRatio: 2.5,
     },
     tabs: {
         flexDirection: 'row',
-        borderRadius: consts.radius, // Use radius from constants
+        borderRadius: consts.radius,
         backgroundColor: consts.ivory,
         overflow: 'hidden',
     },
@@ -135,7 +143,7 @@ const styles = StyleSheet.create({
         width: 70,
         height: 70,
         backgroundColor: consts.blueGrotto,
-        borderRadius: 35, // Fully circular
+        borderRadius: 35,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
@@ -165,7 +173,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         backgroundColor: consts.ivory,
-        borderRadius: 30, // Fully circular
+        borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: consts.borderWidth,
