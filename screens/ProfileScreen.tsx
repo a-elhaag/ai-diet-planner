@@ -46,7 +46,7 @@ interface EditFormData {
 }
 
 const ProfileScreen: React.FC = () => {
-    const { unitSystem, toggleUnitSystem, formatWeight, formatHeight } = useUnit();
+    const {formatWeight, formatHeight } = useUnit();
     const { user, signOut, signIn } = useAuth();
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [editData, setEditData] = useState<EditFormData>({

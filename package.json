@@ -6,9 +6,13 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "server": "uvicorn Server.app:app --host 0.0.0.0 --port 3000 --reload",
+    "dev": "concurrently \"npm run server\" \"npm run start\""
   },
   "dependencies": {
+    "@azure/core-auth": "^1.9.0",
+    "@azure/openai": "^2.0.0",
     "@expo/vector-icons": "^13.0.0",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-picker/picker": "^2.11.0",
@@ -20,8 +24,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "expo": "~52.0.39",
+    "expo-constants": "^17.1.6",
     "expo-haptics": "^14.0.1",
     "expo-status-bar": "~2.0.1",
+    "express": "^5.1.0",
+    "mssql": "^11.0.1",
     "picocolors": "^1.1.1",
     "react": "18.3.1",
     "react-native": "0.76.7",
@@ -36,6 +43,7 @@
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
     "@types/react-native": "^0.72.8",
+    "concurrently": "^9.1.2",
     "typescript": "^5.8.3"
   },
   "private": true

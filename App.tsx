@@ -11,6 +11,7 @@ import Navbar, { TabName } from './components/Navbar';
 import consts from './const/consts';
 import { UnitProvider } from './contexts/UnitContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AiProvider } from './contexts/AiContext';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState<TabName>('home');
@@ -54,9 +55,11 @@ export default function App() {
     <SafeAreaProvider>
       <AuthProvider>
         <UnitProvider>
-          <SafeAreaView style={styles.safeArea}>
-            <MainApp />
-          </SafeAreaView>
+          <AiProvider>
+            <SafeAreaView style={styles.safeArea}>
+              <MainApp />
+            </SafeAreaView>
+          </AiProvider>
         </UnitProvider>
       </AuthProvider>
     </SafeAreaProvider>

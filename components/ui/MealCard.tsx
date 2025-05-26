@@ -9,11 +9,23 @@ import {
 import { Feather } from '@expo/vector-icons';
 import consts from '../../const/consts';
 
+interface MealDetail {
+    name: string;
+    ingredients?: string[];
+    preparation?: string;
+    nutrition?: {
+        calories?: number;
+        protein?: number;
+        carbs?: number;
+        fats?: number;
+    };
+}
+
 interface MealsType {
-    breakfast: string;
-    lunch: string;
-    dinner: string;
-    snacks?: string[];
+    breakfast: string | MealDetail;
+    lunch: string | MealDetail;
+    dinner: string | MealDetail;
+    snacks?: (string | MealDetail)[];
 }
 
 interface MealCardProps {
@@ -66,33 +78,53 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
 
     const progressPercentage = (getCompletedMeals() / getTotalMeals()) * 100;
 
-    const renderMealCheckItem = (mealType: string, mealText: string, mealKey: string) => (
-        <TouchableOpacity
-            key={mealKey}
-            style={styles.mealCheckItem}
-            onPress={() => toggleMealComplete(mealKey)}
-            activeOpacity={0.7}
-        >
-            <View style={[
-                styles.checkbox,
-                completedMeals[mealKey] && styles.checkboxChecked
-            ]}>
-                {completedMeals[mealKey] && (
-                    <Feather name="check" size={16} color={consts.white} />
-                )}
-            </View>
+    // Helper to extract meal name from either string or MealDetail
+    const getMealName = (meal: string | MealDetail): string => {
+        if (typeof meal === 'string') {
+            return meal;
+        } else {
+            return meal.name;
+        }
+    };
 
-            <View style={styles.mealTextContainer}>
-                <Text style={styles.mealType}>{mealType}</Text>
-                <Text style={[
-                    styles.mealDescription,
-                    completedMeals[mealKey] && styles.mealCompleted
+    const renderMealCheckItem = (mealType: string, meal: string | MealDetail, mealKey: string) => {
+        const mealText = getMealName(meal);
+        
+        return (
+            <TouchableOpacity
+                key={mealKey}
+                style={styles.mealCheckItem}
+                onPress={() => toggleMealComplete(mealKey)}
+                activeOpacity={0.7}
+            >
+                <View style={[
+                    styles.checkbox,
+                    completedMeals[mealKey] && styles.checkboxChecked
                 ]}>
-                    {mealText}
-                </Text>
-            </View>
-        </TouchableOpacity>
-    );
+                    {completedMeals[mealKey] && (
+                        <Feather name="check" size={16} color={consts.white} />
+                    )}
+                </View>
+
+                <View style={styles.mealTextContainer}>
+                    <Text style={styles.mealType}>{mealType}</Text>
+                    <Text style={[
+                        styles.mealDescription,
+                        completedMeals[mealKey] && styles.mealCompleted
+                    ]}>
+                        {mealText}
+                    </Text>
+                    
+                    {typeof meal !== 'string' && meal.nutrition && (
+                        <Text style={styles.nutritionText}>
+                            {meal.nutrition.calories && `${meal.nutrition.calories} cal`}
+                            {meal.nutrition.protein && ` • ${meal.nutrition.protein}g protein`}
+                        </Text>
+                    )}
+                </View>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -153,6 +185,11 @@ const styles = StyleSheet.create({
                 elevation: 4,
             },
         }),
+    },
+    nutritionText: {
+        color: consts.blueGrotto,
+        fontSize: 12,
+        marginTop: 4,
     },
     contentContainer: {
         flex: 1,
