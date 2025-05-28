@@ -12,6 +12,7 @@ import consts from './const/consts';
 import { UnitProvider } from './contexts/UnitContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AiProvider } from './contexts/AiContext';
+import { WaterProvider } from './contexts/WaterContext';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState<TabName>('home');
@@ -55,11 +56,13 @@ export default function App() {
     <SafeAreaProvider>
       <AuthProvider>
         <UnitProvider>
-          <AiProvider>
-            <SafeAreaView style={styles.safeArea}>
-              <MainApp />
-            </SafeAreaView>
-          </AiProvider>
+          <WaterProvider>
+            <AiProvider>
+              <SafeAreaView style={styles.safeArea}>
+                <MainApp />
+              </SafeAreaView>
+            </AiProvider>
+          </WaterProvider>
         </UnitProvider>
       </AuthProvider>
     </SafeAreaProvider>

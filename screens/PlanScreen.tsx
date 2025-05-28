@@ -249,18 +249,47 @@ const MOCK_WEEK_MEALS = [
   }
 ];
 
+// Function to shuffle array elements
+const shuffleArray = (array: any[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+};
+
+// Function to create a new shuffled week of meals
+const generateShuffledMeals = () => {
+    return shuffleArray(MOCK_WEEK_MEALS);
+};
+
 const PlanScreen: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState(0);
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [weekMeals, setWeekMeals] = useState(MOCK_WEEK_MEALS);
 
+    // Function to shuffle meal plans for the week
+    const shuffleMealPlans = () => {
+        // Create a copy of the meal plans
+        const mealsCopy = [...MOCK_WEEK_MEALS];
+        
+        // Shuffle the array using Fisher-Yates algorithm
+        for (let i = mealsCopy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [mealsCopy[i], mealsCopy[j]] = [mealsCopy[j], mealsCopy[i]];
+        }
+        
+        return mealsCopy;
+    };
+
     const generateMealPlan = () => {
         setLoading(true);
         // Simulate AI thinking
         setTimeout(() => {
             setLoading(false);
-            setWeekMeals(MOCK_WEEK_MEALS);
+            setWeekMeals(shuffleMealPlans());
         }, 2000);
     };
 

@@ -7,6 +7,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import consts from '../const/consts';
@@ -30,29 +32,82 @@ const activityLevels = [
   'Extra Active',
 ];
 
+const predefinedGoals = [
+  'Weight Loss',
+  'Weight Gain',
+  'Muscle Building',
+  'Maintenance',
+  'Improve Overall Health',
+  'Athletic Performance',
+  'Better Sleep',
+  'Increase Energy',
+  'Lower Blood Pressure',
+  'Lower Cholesterol',
+  'Custom Goal'
+];
+
 export default function SignUpScreen() {
   const { signIn } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     age: '',
     weight: '',
     height: '',
-    goal: '',
+    goal: 'Weight Loss',
+    customGoal: '',
+    showCustomGoal: false,
     activityLevel: 'Sedentary',
     dietaryRestrictions: ['None'],
   });
 
+  const loadingSteps = [
+    "Creating your profile...",
+    "Analyzing your health data...",
+    "Calculating nutrition requirements...",
+    "Preparing personalized meal plans...",
+    "Setting up water tracking...",
+    "Almost there..."
+  ];
+
   const handleSubmit = async () => {
-    try {
-      await signIn({
-        ...formData,
-        age: parseInt(formData.age),
-        weight: parseFloat(formData.weight),
-        height: parseFloat(formData.height),
-      });
-    } catch (error) {
-      console.error('Error during sign up:', error);
-    }
+    setIsLoading(true);
+    setLoadingStep(0);
+
+    // Simulate a multi-step loading process
+    const processSteps = () => {
+      let currentStep = 0;
+      
+      const interval = setInterval(() => {
+        currentStep++;
+        
+        if (currentStep >= loadingSteps.length) {
+          clearInterval(interval);
+          
+          // Final signin after loading sequence completes
+          try {
+            // Prepare data for sign-in, using the custom goal if specified
+            const finalGoal = formData.goal === 'Custom Goal' ? formData.customGoal : formData.goal;
+            
+            signIn({
+              ...formData,
+              goal: finalGoal,
+              age: parseInt(formData.age),
+              weight: parseFloat(formData.weight),
+              height: parseFloat(formData.height),
+            });
+          } catch (error) {
+            console.error('Error during sign up:', error);
+            setIsLoading(false);
+          }
+        } else {
+          setLoadingStep(currentStep);
+        }
+      }, 800); // Update every 800ms
+    };
+
+    processSteps();
   };
 
   return (
@@ -105,14 +160,38 @@ export default function SignUpScreen() {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Goal</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={formData.goal}
-            onChangeText={(text) => setFormData({ ...formData, goal: text })}
-            placeholder="What's your fitness goal?"
-            multiline
-          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formData.goal}
+              onValueChange={(value) => {
+                const isCustom = value === 'Custom Goal';
+                setFormData({ 
+                  ...formData, 
+                  goal: value,
+                  showCustomGoal: isCustom
+                });
+              }}
+              style={styles.picker}
+            >
+              {predefinedGoals.map((goal) => (
+                <Picker.Item key={goal} label={goal} value={goal} />
+              ))}
+            </Picker>
+          </View>
         </View>
+        
+        {formData.showCustomGoal && (
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Custom Goal</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={formData.customGoal}
+              onChangeText={(text) => setFormData({ ...formData, customGoal: text })}
+              placeholder="Describe your custom fitness goal"
+              multiline
+            />
+          </View>
+        )}
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Activity Level</Text>
@@ -152,6 +231,16 @@ export default function SignUpScreen() {
           <Text style={styles.buttonText}>Create Profile</Text>
         </TouchableOpacity>
       </View>
+      
+      {/* Loading Modal */}
+      <Modal visible={isLoading} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.loadingCard}>
+            <ActivityIndicator size="large" color={consts.blueGrotto} />
+            <Text style={styles.loadingText}>{loadingSteps[loadingStep]}</Text>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -193,6 +282,7 @@ const styles = StyleSheet.create({
     backgroundColor: consts.ivory,
     borderRadius: consts.radius,
     overflow: 'hidden',
+    marginBottom: 8,
   },
   picker: {
     width: '100%',
@@ -215,6 +305,30 @@ const styles = StyleSheet.create({
     color: consts.white,
     fontSize: consts.font.large,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  loadingCard: {
+    backgroundColor: consts.white,
+    borderRadius: consts.radius,
+    padding: consts.spacing.xl,
+    alignItems: 'center',
+    width: '80%',
+    shadowColor: consts.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  loadingText: {
+    marginTop: consts.spacing.md,
+    fontSize: consts.font.medium,
+    color: consts.midnightBlue,
     textAlign: 'center',
   },
 });

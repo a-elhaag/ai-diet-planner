@@ -15,12 +15,14 @@ import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
 import { useAuth } from '../contexts/AuthContext';
 import { useUnit } from '../contexts/UnitContext';
+import { useWater } from '../contexts/WaterContext';
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
     const { user } = useAuth();
     const { formatWeight } = useUnit();
+    const { waterGlasses, totalGlasses, addWaterGlass, removeWaterGlass } = useWater();
     const [selectedDay, setSelectedDay] = useState(0);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
@@ -172,20 +174,24 @@ const HomeScreen: React.FC = () => {
         >
             <View style={styles.waterHeader}>
                 <Text style={styles.waterTitle}>Water Intake</Text>
-                <Text style={styles.waterAmount}>4 / 8 glasses</Text>
+                <Text style={styles.waterAmount}>{waterGlasses} / {totalGlasses} glasses</Text>
             </View>
 
             <View style={styles.waterTracker}>
-                {[1, 2, 3, 4, 5, 6, 7, 8].map(glass => (
-                    <TouchableOpacity key={glass} style={styles.waterGlassContainer}>
+                {Array.from({ length: totalGlasses }).map((_, index) => (
+                    <TouchableOpacity 
+                        key={index} 
+                        style={styles.waterGlassContainer}
+                        onPress={() => index < waterGlasses ? removeWaterGlass() : addWaterGlass()}
+                    >
                         <View style={[
                             styles.waterGlass,
-                            glass <= 4 ? styles.waterGlassFilled : {}
+                            index < waterGlasses ? styles.waterGlassFilled : {}
                         ]}>
                             <Feather
                                 name="droplet"
                                 size={18}
-                                color={glass <= 4 ? consts.white : consts.babyBlue}
+                                color={index < waterGlasses ? consts.white : consts.babyBlue}
                             />
                         </View>
                     </TouchableOpacity>
