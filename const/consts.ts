@@ -18,11 +18,11 @@ const platformValues = {
 };
 
 const consts = {
-    midnightBlue: "#265B8B",
-    ivory: "#ECECEB",
-    babyBlue: "#84C7F2",
-    blueGrotto: "#1181C8",
-    white: "#FFF",
+    midnightBlue: "#1c534a",
+    ivory: "#fbebe4",
+    babyBlue: "#1c534a",
+    blueGrotto: "#1c534a",
+    white: "#fffefc",
     black: "#000",
     radius: 15,
     borderWidth: 2,
