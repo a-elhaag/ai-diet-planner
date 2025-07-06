@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
     },
     tabSelector: {
         flexDirection: 'row',
-        backgroundColor: '#f0f1f5',
+        backgroundColor: consts.white, // White component
         borderRadius: 20,
         marginVertical: 10, // Decreased from 16
         marginHorizontal: 4, // Added horizontal margin
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     progressBar: {
         flex: 1,
         height: 8, // Increased from 6
-        backgroundColor: '#f0f1f5',
+        backgroundColor: consts.white, // White component
         borderRadius: 4,
         overflow: 'hidden',
         marginRight: 10,
@@ -676,7 +676,7 @@ const styles = StyleSheet.create({
         marginLeft: 3,
     },
     nutritionInfoCard: {
-        backgroundColor: '#f8f9ff',
+        backgroundColor: consts.white, // White component
         borderRadius: 20,
         padding: 16,
         marginVertical: 10,

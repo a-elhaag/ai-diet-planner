@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     },
     navbar: {
         flexDirection: 'row',
-        backgroundColor: consts.white,
+        backgroundColor: consts.white, // White component
         justifyContent: 'space-evenly',
         alignItems: 'center',
         height: 60, // Reduced height from 70 to 60
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     actionButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: consts.offWhite,
+        backgroundColor: consts.white, // White component
         borderRadius: 28,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },

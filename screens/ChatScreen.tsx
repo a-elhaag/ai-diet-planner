@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
+  Animated,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
@@ -41,11 +42,30 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef<FlatList>(null);
   
+  // Animation for screen entrance
+  const screenAnimation = useRef(new Animated.Value(0)).current;
+  const quickActionsAnimation = useRef(new Animated.Value(0)).current;
+  
   const { currentPlan, userProgress } = useMealPlanContext();
 
   // Load chat history on mount
   useEffect(() => {
     loadChatHistory();
+    
+    // Animate screen entrance
+    Animated.timing(screenAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    
+    // Animate quick actions with delay
+    Animated.timing(quickActionsAnimation, {
+      toValue: 1,
+      duration: 500,
+      delay: 300,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   const loadChatHistory = async () => {
@@ -175,12 +195,12 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ onClose }) => {
   );
 
   const renderQuickActions = () => (
-    <View style={styles.quickActionsContainer}>
+    <Animated.View style={[styles.quickActionsContainer, { opacity: quickActionsAnimation }]}>
       <Text style={styles.quickActionsTitle}>Quick Questions:</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickActionsScroll}>
         {[
           "How can I meal prep better?",
-          "Suggest healthy snacks",
+          "Suggest healthy snacks", 
           "Help with portion sizes",
           "Nutrition tips",
           "Recipe ideas"
@@ -197,14 +217,28 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ onClose }) => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <Animated.View 
+      style={[
+        styles.container,
+        {
+          opacity: screenAnimation,
+          transform: [{
+            translateY: screenAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [50, 0]
+            })
+          }]
+        }
+      ]}
     >
+      <KeyboardAvoidingView 
+        style={styles.keyboardContainer} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <View style={styles.header}>
         <View style={styles.headerInfo}>
           <Feather name="message-circle" size={24} color={consts.deepGreen} />
@@ -252,7 +286,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ onClose }) => {
           <Feather name="send" size={20} color={consts.white} />
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </Animated.View>
   );
 };
 
@@ -260,6 +295,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: consts.lightPeach, // Peachy background
+  },
+  keyboardContainer: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
