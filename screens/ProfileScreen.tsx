@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Switch, ActivityIndicator, Alert, Share } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Switch, ActivityIndicator, Alert, Share, TextInput, Modal } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
 import Button from '../components/ui/Button';
@@ -16,24 +16,26 @@ const ProfileScreen: React.FC = () => {
         updateSettings, 
         exportData, 
         importData,
-        generateNewPlan 
+        generateNewPlan,
+        userInfo,
+        updateUserInfo,
+        resetWeeklyProgress,
+        resetDailyProgress
     } = useMealPlanContext();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [editingField, setEditingField] = useState<string | null>(null);
+    const [editValue, setEditValue] = useState('');
+    const [showEditModal, setShowEditModal] = useState(false);
 
-    // Mock user data - in a real app, this would come from a user profile store or API
-    // Assuming height is 5'11" (71 inches) and weight is 152 lbs
-    const heightInInches = 71; // 5'11"
-    const weightInLbs = 152;
-    
-    // Create user metrics and preferences objects
+    // Create user metrics and preferences objects from context
     const userMetrics: UserMetrics = {
-        age: 32,
-        weight: unitSystem === 'metric' ? Math.round(weightInLbs * 0.453592) : weightInLbs,
-        height: unitSystem === 'metric' ? Math.round(heightInInches * 2.54) : heightInInches,
-        gender: 'male' as Gender,
+        age: userInfo.age,
+        weight: userInfo.weight,
+        height: userInfo.height,
+        gender: userInfo.gender as Gender,
         unit: unitSystem,
-        activityLevel: 'moderate'
+        activityLevel: userInfo.activityLevel
     };
     
     const userPreferences: UserPreferences = {
@@ -42,6 +44,50 @@ const ProfileScreen: React.FC = () => {
         allergies: ['peanuts'],
         dislikes: ['olives', 'sardines'],
         mealCount: 4
+    };
+
+    const handleEditField = (field: string, currentValue: string | number) => {
+        setEditingField(field);
+        setEditValue(currentValue.toString());
+        setShowEditModal(true);
+    };
+
+    const handleSaveEdit = () => {
+        if (!editingField) return;
+        
+        const updates: any = {};
+        if (editingField === 'name' || editingField === 'email') {
+            updates[editingField] = editValue;
+        } else {
+            updates[editingField] = parseFloat(editValue) || 0;
+        }
+        
+        updateUserInfo(updates);
+        setShowEditModal(false);
+        setEditingField(null);
+        setEditValue('');
+    };
+
+    const handleResetProgress = (type: 'daily' | 'weekly') => {
+        Alert.alert(
+            `Reset ${type.charAt(0).toUpperCase() + type.slice(1)} Progress`,
+            `Are you sure you want to reset your ${type} progress? This will clear all tracked data for this ${type === 'daily' ? 'day' : 'week'}.`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                    text: 'Reset', 
+                    style: 'destructive',
+                    onPress: () => {
+                        if (type === 'daily') {
+                            resetDailyProgress();
+                        } else {
+                            resetWeeklyProgress();
+                        }
+                        Alert.alert('Success', `${type.charAt(0).toUpperCase() + type.slice(1)} progress has been reset.`);
+                    }
+                }
+            ]
+        );
     };
 
     const handleGeneratePlan = async (metrics: UserMetrics, preferences: UserPreferences) => {
@@ -86,31 +132,90 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View style={styles.profileHeader}>
-                    <Text style={styles.userName}>John Doe</Text>
+                    <TouchableOpacity 
+                        style={styles.editableRow}
+                        onPress={() => handleEditField('name', userInfo.name)}
+                    >
+                        <Text style={styles.userName}>{userInfo.name}</Text>
+                        <Feather name="edit-2" size={16} color={consts.deepGreen} />
+                    </TouchableOpacity>
                     <Text style={styles.userStats}>Goal: Lose weight | Plan: Low Carb</Text>
                 </View>
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Personal Information</Text>
 
-                    <View style={styles.infoItem}>
+                    <TouchableOpacity 
+                        style={styles.infoItem}
+                        onPress={() => handleEditField('height', userInfo.height)}
+                    >
                         <Text style={styles.infoLabel}>Height</Text>
-                        <Text style={styles.infoValue}>{formatHeight(heightInInches)}</Text>
-                    </View>
+                        <View style={styles.editableValue}>
+                            <Text style={styles.infoValue}>
+                                {unitSystem === 'metric' ? `${userInfo.height} cm` : `${Math.floor(userInfo.height / 2.54 / 12)}'${Math.round((userInfo.height / 2.54) % 12)}"`}
+                            </Text>
+                            <Feather name="edit-2" size={14} color={consts.deepGreen} />
+                        </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.infoItem}>
+                    <TouchableOpacity 
+                        style={styles.infoItem}
+                        onPress={() => handleEditField('weight', userInfo.weight)}
+                    >
                         <Text style={styles.infoLabel}>Weight</Text>
-                        <Text style={styles.infoValue}>{formatWeight(weightInLbs)}</Text>
-                    </View>
+                        <View style={styles.editableValue}>
+                            <Text style={styles.infoValue}>
+                                {unitSystem === 'metric' ? `${userInfo.weight} kg` : `${Math.round(userInfo.weight * 2.20462)} lbs`}
+                            </Text>
+                            <Feather name="edit-2" size={14} color={consts.deepGreen} />
+                        </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.infoItem}>
+                    <TouchableOpacity 
+                        style={styles.infoItem}
+                        onPress={() => handleEditField('age', userInfo.age)}
+                    >
                         <Text style={styles.infoLabel}>Age</Text>
-                        <Text style={styles.infoValue}>32</Text>
-                    </View>
+                        <View style={styles.editableValue}>
+                            <Text style={styles.infoValue}>{userInfo.age}</Text>
+                            <Feather name="edit-2" size={14} color={consts.deepGreen} />
+                        </View>
+                    </TouchableOpacity>
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Activity Level</Text>
-                        <Text style={styles.infoValue}>Moderately active</Text>
+                        <Text style={styles.infoValue}>{userInfo.activityLevel.replace('_', ' ')}</Text>
+                    </View>
+
+                    <TouchableOpacity 
+                        style={styles.infoItem}
+                        onPress={() => handleEditField('email', userInfo.email || '')}
+                    >
+                        <Text style={styles.infoLabel}>Email</Text>
+                        <View style={styles.editableValue}>
+                            <Text style={styles.infoValue}>{userInfo.email || 'Not set'}</Text>
+                            <Feather name="edit-2" size={14} color={consts.deepGreen} />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Progress Tracking</Text>
+                    <Text style={styles.infoText}>
+                        Reset your progress tracking to start fresh. This will clear your logged meals, hydration, and activity data.
+                    </Text>
+                    
+                    <View style={styles.resetContainer}>
+                        <Button 
+                            text="Reset Daily Progress" 
+                            variant="secondary" 
+                            onPress={() => handleResetProgress('daily')}
+                        />
+                        <Button 
+                            text="Reset Weekly Progress" 
+                            variant="secondary" 
+                            onPress={() => handleResetProgress('weekly')}
+                        />
                     </View>
                 </View>
 
@@ -279,6 +384,50 @@ const ProfileScreen: React.FC = () => {
                 <View style={styles.bottomPadding} />
                 <View style={{ height: 100 }} />
             </ScrollView>
+
+            {/* Edit Modal */}
+            <Modal
+                visible={showEditModal}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setShowEditModal(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>
+                            Edit {editingField ? editingField.charAt(0).toUpperCase() + editingField.slice(1) : ''}
+                        </Text>
+                        
+                        <TextInput
+                            style={styles.modalInput}
+                            value={editValue}
+                            onChangeText={setEditValue}
+                            placeholder={`Enter ${editingField}`}
+                            keyboardType={
+                                editingField === 'email' ? 'email-address' :
+                                editingField === 'name' ? 'default' : 'numeric'
+                            }
+                            autoFocus
+                        />
+                        
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity 
+                                style={[styles.modalButton, styles.cancelButton]}
+                                onPress={() => setShowEditModal(false)}
+                            >
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity 
+                                style={[styles.modalButton, styles.saveButton]}
+                                onPress={handleSaveEdit}
+                            >
+                                <Text style={styles.saveButtonText}>Save</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -492,6 +641,76 @@ const styles = StyleSheet.create({
     settingDescription: {
         fontSize: 14,
         color: '#666',
+    },
+    editableRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    editableValue: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    resetContainer: {
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 12,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: consts.white,
+        borderRadius: 16,
+        padding: 24,
+        width: '80%',
+        maxWidth: 400,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: consts.richGray,
+        marginBottom: 16,
+        textAlign: 'center',
+    },
+    modalInput: {
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 16,
+        marginBottom: 20,
+        backgroundColor: '#f8fafc',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 12,
+    },
+    modalButton: {
+        flex: 1,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    cancelButton: {
+        backgroundColor: '#f1f5f9',
+    },
+    saveButton: {
+        backgroundColor: consts.deepGreen,
+    },
+    cancelButtonText: {
+        color: consts.richGray,
+        fontWeight: '500',
+    },
+    saveButtonText: {
+        color: consts.white,
+        fontWeight: '600',
     },
 });
 

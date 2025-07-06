@@ -33,7 +33,6 @@ const DayTabs: React.FC<DayTabsProps> = ({
             >
                 {abbreviatedDays.map((day, index) => {
                     const isSelected = selectedDay === index;
-                    const isFreeDay = index === 5;
 
                     return (
                         <TouchableOpacity
@@ -42,7 +41,6 @@ const DayTabs: React.FC<DayTabsProps> = ({
                             style={[
                                 styles.dayTab,
                                 isSelected && styles.selectedDayTab,
-                                isFreeDay && styles.freeDayTab,
                             ]}
                             activeOpacity={0.85}
                         >
@@ -56,14 +54,6 @@ const DayTabs: React.FC<DayTabsProps> = ({
                                 >
                                     {day}
                                 </Text>
-                                {isFreeDay && (
-                                    <Text
-                                        style={[styles.freeDayLabel, isSelected && styles.selectedFreeDayLabel]}
-                                        numberOfLines={1}
-                                    >
-                                        Free
-                                    </Text>
-                                )}
                             </View>
                         </TouchableOpacity>
                     );
@@ -116,16 +106,6 @@ const styles = StyleSheet.create({
     selectedDayText: {
         color: consts.offWhite,
         fontWeight: '800',
-    },
-    freeDayLabel: {
-        fontSize: 9, // Reduced from 11
-        marginTop: 2, // Reduced from 3
-        color: consts.deepGreen,
-        fontStyle: 'italic',
-        textAlign: 'center',
-    },
-    selectedFreeDayLabel: {
-        color: consts.offWhite,
     },
 });
 

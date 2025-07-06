@@ -9,7 +9,8 @@ import {
     Dimensions,
     Modal,
     TextInput,
-    Alert
+    Alert,
+    Image
 } from 'react-native';
 import DayTabs from '../components/ui/DayTabs';
 import MealCard from '../components/ui/MealCard';
@@ -17,6 +18,7 @@ import Button from '../components/ui/Button';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
 import { useMealPlanContext } from '../contexts/MealPlanContext';
+import * as ImagePicker from 'expo-image-picker';
 
 const { width } = Dimensions.get('window');
 
@@ -35,7 +37,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onTabPress }) => {
     const [quickMealForm, setQuickMealForm] = useState({
         name: '',
         category: 'breakfast' as 'breakfast' | 'lunch' | 'dinner' | 'snack',
-        calories: ''
+        calories: '',
+        photo: null as string | null
     });
     
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -202,11 +205,62 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onTabPress }) => {
             name: quickMealForm.name,
             category: quickMealForm.category,
             calories: parseInt(quickMealForm.calories),
+            photo: quickMealForm.photo || undefined,
         });
 
-        setQuickMealForm({ name: '', category: 'breakfast', calories: '' });
+        setQuickMealForm({ name: '', category: 'breakfast', calories: '', photo: null });
         setShowQuickAdd(false);
         Alert.alert('Success', 'Meal logged successfully! +5 points');
+    };
+
+    const handleTakePhoto = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission required', 'Camera permission is needed to take photos');
+            return;
+        }
+
+        const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+        });
+
+        if (!result.canceled && result.assets[0]) {
+            setQuickMealForm({ ...quickMealForm, photo: result.assets[0].uri });
+        }
+    };
+
+    const handlePickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission required', 'Photo library permission is needed to select photos');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+        });
+
+        if (!result.canceled && result.assets[0]) {
+            setQuickMealForm({ ...quickMealForm, photo: result.assets[0].uri });
+        }
+    };
+
+    const handlePhotoAction = () => {
+        Alert.alert(
+            'Add Photo',
+            'Choose how to add a photo of your meal',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Take Photo', onPress: handleTakePhoto },
+                { text: 'Choose from Library', onPress: handlePickImage },
+            ]
+        );
     };
 
     const handleHydrationUpdate = (glasses: number) => {
@@ -441,6 +495,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onTabPress }) => {
                         </TouchableOpacity>
                     </View>
                     
+                    <Text style={styles.modalSubtitle}>
+                        Log a meal quickly, even without an active meal plan
+                    </Text>
+                    
                     <TextInput
                         style={styles.input}
                         placeholder="Meal name (e.g., Greek yogurt with berries)"
@@ -475,6 +533,28 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onTabPress }) => {
                         onChangeText={(text) => setQuickMealForm({ ...quickMealForm, calories: text })}
                         keyboardType="numeric"
                     />
+                    
+                    <View style={styles.photoSection}>
+                        <Text style={styles.photoLabel}>Add Photo (Optional)</Text>
+                        <TouchableOpacity style={styles.photoButton} onPress={handlePhotoAction}>
+                            <Feather name="camera" size={20} color={consts.deepGreen} />
+                            <Text style={styles.photoButtonText}>
+                                {quickMealForm.photo ? 'Change Photo' : 'Add Photo'}
+                            </Text>
+                        </TouchableOpacity>
+                        
+                        {quickMealForm.photo && (
+                            <View style={styles.photoPreview}>
+                                <Image source={{ uri: quickMealForm.photo }} style={styles.previewImage} />
+                                <TouchableOpacity 
+                                    style={styles.removePhotoButton}
+                                    onPress={() => setQuickMealForm({ ...quickMealForm, photo: null })}
+                                >
+                                    <Feather name="x" size={16} color={consts.white} />
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </View>
                     
                     <View style={styles.modalActions}>
                         <Button
@@ -1002,6 +1082,13 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: consts.midnightBlue,
     },
+    modalSubtitle: {
+        fontSize: 14,
+        color: '#666',
+        textAlign: 'center',
+        marginBottom: 16,
+        fontStyle: 'italic',
+    },
     input: {
         borderWidth: 1,
         borderColor: '#e2e8f0',
@@ -1161,6 +1248,54 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         marginTop: 8,
+    },
+    // Photo styles
+    photoSection: {
+        marginVertical: 16,
+    },
+    photoLabel: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: consts.richGray,
+        marginBottom: 8,
+    },
+    photoButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: consts.deepGreen,
+        borderStyle: 'dashed',
+        borderRadius: 12,
+        padding: 16,
+        backgroundColor: 'rgba(28, 83, 74, 0.05)',
+        gap: 8,
+    },
+    photoButtonText: {
+        color: consts.deepGreen,
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    photoPreview: {
+        marginTop: 12,
+        position: 'relative',
+        alignSelf: 'flex-start',
+    },
+    previewImage: {
+        width: 120,
+        height: 90,
+        borderRadius: 8,
+    },
+    removePhotoButton: {
+        position: 'absolute',
+        top: -8,
+        right: -8,
+        backgroundColor: '#ef4444',
+        borderRadius: 12,
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

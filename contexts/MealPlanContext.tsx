@@ -100,6 +100,8 @@ interface AppSettings {
 
 // Define the enhanced context value interface
 interface MealPlanContextType {
+  // User info (editable)
+  userInfo: UserInfo;
   // Current active meal plan
   currentPlan: MealPlan | null;
   // List of previous meal plans (limited to MAX_HISTORY_SIZE)
@@ -122,12 +124,15 @@ interface MealPlanContextType {
   clearAllMealPlans: () => void;
   
   // New functions for enhanced features
+  updateUserInfo: (info: Partial<UserInfo>) => void;
   logQuickMeal: (meal: Omit<QuickMeal, 'id' | 'timestamp'>) => void;
   updateHydration: (glasses: number) => void;
   updateActivity: (steps: number, minutes: number) => void;
   addPoints: (points: number) => void;
   unlockBadge: (badgeId: string) => void;
   updateStreak: () => void;
+  resetWeeklyProgress: () => void;
+  resetDailyProgress: () => void;
   addToGroceryList: (items: string[]) => void;
   removeFromGroceryList: (item: string) => void;
   updateSettings: (settings: Partial<AppSettings>) => void;
@@ -141,6 +146,7 @@ const MealPlanContext = createContext<MealPlanContextType | undefined>(undefined
 
 // Storage keys
 const STORAGE_KEYS = {
+  USER_INFO: 'ai_diet_planner_user_info',
   CURRENT_PLAN: 'ai_diet_planner_current_plan',
   PLAN_HISTORY: 'ai_diet_planner_plan_history',
   USER_PROGRESS: 'ai_diet_planner_user_progress',
@@ -152,6 +158,16 @@ const STORAGE_KEYS = {
 };
 
 // Default values for new features
+const defaultUserInfo: UserInfo = {
+  name: 'John Doe',
+  email: '',
+  age: 30,
+  weight: 70,
+  height: 175,
+  gender: 'male',
+  activityLevel: 'moderate',
+  unit: 'metric',
+};
 const defaultUserProgress: UserProgress = {
   points: 0,
   badges: [],
@@ -176,6 +192,20 @@ const defaultUserProgress: UserProgress = {
       completed: false,
     },
   ],
+  tracking: {
+    resetPeriod: 'weekly',
+    lastResetDate: new Date().toISOString().split('T')[0],
+    weeklyGoals: {
+      mealsLogged: 21, // 3 meals x 7 days
+      hydrationDays: 7,
+      exerciseDays: 5,
+    },
+    currentWeekProgress: {
+      mealsLogged: 0,
+      hydrationDays: 0,
+      exerciseDays: 0,
+    },
+  },
 };
 
 const defaultDailyTracking: DailyTracking = {
@@ -211,6 +241,8 @@ const defaultAppSettings: AppSettings = {
 
 // Provider component
 export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // User info state
+  const [userInfo, setUserInfo] = useState<UserInfo>(defaultUserInfo);
   // Existing state
   const [currentPlan, setCurrentPlan] = useState<MealPlan | null>(null);
   const [planHistory, setPlanHistory] = useState<MealPlan[]>([]);
@@ -500,6 +532,7 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
   const importData = async (dataString: string): Promise<void> => {
     try {
       const data = JSON.parse(dataString);
+      if (data.userInfo) setUserInfo(data.userInfo);
       if (data.currentPlan) setCurrentPlan(data.currentPlan);
       if (data.planHistory) setPlanHistory(data.planHistory);
       if (data.userProgress) setUserProgress(data.userProgress);
@@ -513,7 +546,40 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
+  // Update user info function
+  const updateUserInfo = (info: Partial<UserInfo>) => {
+    setUserInfo(prevInfo => ({ ...prevInfo, ...info }));
+  };
+
+  // Reset progress functions
+  const resetWeeklyProgress = () => {
+    setUserProgress(prevProgress => ({
+      ...prevProgress,
+      tracking: {
+        ...prevProgress.tracking,
+        currentWeekProgress: {
+          mealsLogged: 0,
+          hydrationDays: 0,
+          exerciseDays: 0,
+        },
+        lastResetDate: new Date().toISOString().split('T')[0],
+      },
+    }));
+  };
+
+  const resetDailyProgress = () => {
+    setDailyTracking(prevTracking => ({
+      ...prevTracking,
+      date: new Date().toISOString().split('T')[0],
+      hydration: { ...prevTracking.hydration, glasses: 0 },
+      activity: { ...prevTracking.activity, steps: 0, minutes: 0 },
+      mealsLogged: [],
+    }));
+  };
+
   const value = {
+    // User info
+    userInfo,
     // Original data
     currentPlan,
     planHistory,
@@ -529,12 +595,15 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
     getMealPlanFromHistory,
     clearAllMealPlans,
     // New functions
+    updateUserInfo,
     logQuickMeal,
     updateHydration,
     updateActivity,
     addPoints,
     unlockBadge,
     updateStreak,
+    resetWeeklyProgress,
+    resetDailyProgress,
     addToGroceryList,
     removeFromGroceryList,
     updateSettings,
