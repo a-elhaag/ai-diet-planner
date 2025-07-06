@@ -23,13 +23,13 @@ const consts = {
     ivory: "#fbebe4",
     babyBlue: "#1c534a",
     blueGrotto: "#1c534a",
-    white: "#fffefc",
+    white: "#fbebe4",
     
-    // New color palette
+    // New color palette with peachy background
     deepGreen: "#1c534a",
     lightPeach: "#fbebe4",
     richGray: "#3a3a3a",
-    offWhite: "#fffefc",
+    offWhite: "#fbebe4", // Changed to peachy
     black: "#000",
     radius: 15,
     borderWidth: 2,

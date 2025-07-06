@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import HomeScreen from './screens/HomeScreen';
 import StatsScreen from './screens/StatsScreen';
-import PlanScreen from './screens/PlanScreen';
+import ChatScreen from './screens/ChatScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import Navbar from './components/Navbar';
 import consts from './const/consts';
@@ -24,7 +24,7 @@ export default function App() {
       case 'stats':
         return <StatsScreen />;
       case 'plan':
-        return <PlanScreen />;
+        return <ChatScreen />;
       case 'profile':
         return <ProfileScreen />;
       default:

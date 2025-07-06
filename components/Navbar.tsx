@@ -242,13 +242,22 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
     // Define action items
     const actionItems: ActionItem[] = [
         {
-            id: 'off-plan',
-            icon: 'menu',
-            text: 'Ate Off Plan',
+            id: 'chat',
+            icon: 'message-circle',
+            text: 'AI Chat',
             onPress: () => {
-                console.log('Ate something off plan');
-                // Open form to log what the user actually ate
-                // Trigger AI to adapt the rest of the day
+                console.log('Open AI chat coach');
+                // Open AI chat coach for diet advice and support
+            }
+        },
+        {
+            id: 'regenerate',
+            icon: 'refresh-cw',
+            text: 'Regenerate Plan',
+            onPress: () => {
+                console.log('Regenerate meal plan');
+                // Ask: "Do you want to update just today's meals or the whole plan?"
+                // Call Azure Function to regenerate the meal plan
             }
         },
         {
@@ -258,16 +267,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
             onPress: () => {
                 console.log('Quick add meal');
                 // Use AI/vision to scan a plate or describe the meal
-            }
-        },
-        {
-            id: 'regenerate',
-            icon: 'refresh-cw',
-            text: 'Regenerate',
-            onPress: () => {
-                console.log('Regenerate meals');
-                // Ask: "Do you want to update just today's meals?"
-                // Call Azure Function to modify the current day in the weekly plan
             }
         },
         {
@@ -331,8 +330,8 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
                 <View style={styles.placeholder} />
                 <NavItem
                     tabName="plan"
-                    iconName="calendar"
-                    text="Plan"
+                    iconName="message-circle"
+                    text="Chat"
                     isActive={activeTab === 'plan'}
                     onPress={() => onTabPress('plan')}
                 />

@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import DayTabs from '../components/ui/DayTabs';
 import MealCard from '../components/ui/MealCard';
-import StatsTipsTab from '../components/ui/StatsTipsTab';
 import Button from '../components/ui/Button';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
@@ -23,10 +22,12 @@ const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
     const [userName, setUserName] = useState('John'); // Default name, would come from user profile
-    const [selectedTab, setSelectedTab] = useState<'meals' | 'stats'>('meals');
     const [selectedDay, setSelectedDay] = useState(0);
-    const [activeStatsTab, setActiveStatsTab] = useState<'stats' | 'tips'>('stats');
     const [showQuickAdd, setShowQuickAdd] = useState(false);
+    const [viewingHistory, setViewingHistory] = useState(false);
+    const [historyIndex, setHistoryIndex] = useState(0);
+    const [showEditMeal, setShowEditMeal] = useState(false);
+    const [editingMeal, setEditingMeal] = useState<{type: string; content: string}>({ type: '', content: '' });
     const [quickMealForm, setQuickMealForm] = useState({
         name: '',
         category: 'breakfast' as 'breakfast' | 'lunch' | 'dinner' | 'snack',
@@ -40,12 +41,12 @@ const HomeScreen: React.FC = () => {
     // Get data from new context
     const { 
         currentPlan, 
-        userProgress, 
         dailyTracking, 
+        userProgress,
+        planHistory,
         logQuickMeal,
         updateHydration,
-        addPoints,
-        updateStreak
+        generateNewPlan
     } = useMealPlanContext();
 
     // Calculate daily progress based on context data
@@ -90,7 +91,7 @@ const HomeScreen: React.FC = () => {
                 useNativeDriver: true,
             }),
         ]).start();
-    }, [selectedTab]);
+    }, [selectedDay]);
 
     // Use real meal plan data if available, otherwise fallback to mock data
     const weekMeals = currentPlan?.weeklyPlans ? Object.keys(currentPlan.weeklyPlans).map(day => {
@@ -208,12 +209,84 @@ const HomeScreen: React.FC = () => {
         updateHydration(glasses);
     };
 
+    const handleCreateNewPlan = async () => {
+        try {
+            // Use dummy data for now - in real app get from user profile/preferences
+            const dummyMetrics = { age: 30, weight: 70, height: 175, gender: 'female' as const, activityLevel: 'moderate' as const, unit: 'metric' as const };
+            const dummyPrefs = { goals: ['weight_loss'], dietType: 'mediterranean' as const, allergies: [], dislikes: [], mealCount: 3, calorieTarget: 1800 };
+            await generateNewPlan(dummyMetrics, dummyPrefs);
+            Alert.alert('Success', 'New meal plan generated successfully!');
+        } catch (error) {
+            Alert.alert('Error', 'Failed to generate new meal plan. Please try again.');
+        }
+    };
+
+    const handleEditMeal = (mealType: string, currentContent: string) => {
+        setEditingMeal({ type: mealType, content: currentContent });
+        setShowEditMeal(true);
+    };
+
+    const handleSaveEditedMeal = () => {
+        // In a real app, this would update the meal plan in the database
+        Alert.alert('Success', 'Meal updated successfully!');
+        setShowEditMeal(false);
+        setEditingMeal({ type: '', content: '' });
+    };
+
+    const handleViewHistory = () => {
+        setViewingHistory(!viewingHistory);
+        setHistoryIndex(0);
+    };
+
+    const navigateHistory = (direction: 'prev' | 'next') => {
+        if (direction === 'prev' && historyIndex > 0) {
+            setHistoryIndex(historyIndex - 1);
+        } else if (direction === 'next' && historyIndex < planHistory.length - 1) {
+            setHistoryIndex(historyIndex + 1);
+        }
+    };
+
     const renderHeader = () => (
         <View style={styles.header}>
-            <View style={styles.headerTextContainer}>
-                <Text style={styles.greeting}>Hello, {userName}!</Text>
-                <Text style={styles.date}>{`${daysOfWeek[dayOfWeek]}, ${today.toLocaleDateString()}`}</Text>
+            <View style={styles.headerTop}>
+                <View style={styles.headerTextContainer}>
+                    <Text style={styles.greeting}>Hello, {userName}!</Text>
+                    <Text style={styles.date}>{`${daysOfWeek[dayOfWeek]}, ${today.toLocaleDateString()}`}</Text>
+                </View>
+                
+                {planHistory.length > 0 && (
+                    <TouchableOpacity style={styles.historyButton} onPress={handleViewHistory}>
+                        <Feather name="clock" size={16} color={consts.deepGreen} />
+                        <Text style={styles.historyButtonText}>History</Text>
+                    </TouchableOpacity>
+                )}
             </View>
+
+            {viewingHistory && planHistory.length > 0 && (
+                <View style={styles.historyNavigation}>
+                    <TouchableOpacity 
+                        style={[styles.historyNavButton, historyIndex === 0 && styles.disabledButton]}
+                        onPress={() => navigateHistory('prev')}
+                        disabled={historyIndex === 0}
+                    >
+                        <Feather name="chevron-left" size={16} color={consts.deepGreen} />
+                        <Text style={styles.historyNavText}>Previous</Text>
+                    </TouchableOpacity>
+                    
+                    <Text style={styles.historyIndexText}>
+                        {historyIndex + 1} of {planHistory.length}
+                    </Text>
+                    
+                    <TouchableOpacity 
+                        style={[styles.historyNavButton, historyIndex === planHistory.length - 1 && styles.disabledButton]}
+                        onPress={() => navigateHistory('next')}
+                        disabled={historyIndex === planHistory.length - 1}
+                    >
+                        <Text style={styles.historyNavText}>Next</Text>
+                        <Feather name="chevron-right" size={16} color={consts.deepGreen} />
+                    </TouchableOpacity>
+                </View>
+            )}
 
             <Animated.View
                 style={[
@@ -418,21 +491,107 @@ const HomeScreen: React.FC = () => {
         </Modal>
     );
 
-    const renderTip = () => (
-        <Animated.View
-            style={[
-                styles.tipCard,
-                { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
-            ]}
+    const renderHistoryModal = () => (
+        <Modal
+            visible={viewingHistory}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setViewingHistory(false)}
         >
-            <View style={styles.tipHeader}>
-                <Feather name="zap" size={20} color={consts.midnightBlue} />
-                <Text style={styles.tipTitle}>Daily Tip</Text>
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalTitle}>Meal Plan History</Text>
+                        <TouchableOpacity onPress={() => setViewingHistory(false)}>
+                            <Feather name="x" size={24} color={consts.richGray} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {planHistory.length === 0 ? (
+                            <View style={styles.noHistoryContainer}>
+                                <Text style={styles.noHistoryText}>No history available</Text>
+                            </View>
+                        ) : (
+                            planHistory.map((plan, index) => {
+                                // Convert plan.meals to the expected format for MealCard
+                                const formattedMeals = {
+                                    breakfast: plan.meals.find(meal => meal.category === 'breakfast')?.name || "No breakfast",
+                                    lunch: plan.meals.find(meal => meal.category === 'lunch')?.name || "No lunch", 
+                                    dinner: plan.meals.find(meal => meal.category === 'dinner')?.name || "No dinner",
+                                    snacks: plan.meals.filter(meal => meal.category === 'snack').map(meal => meal.name) || []
+                                };
+                                
+                                return (
+                                    <View key={index} style={styles.historyItem}>
+                                        <Text style={styles.historyDate}>
+                                            {plan.timestamp ? new Date(plan.timestamp).toLocaleDateString() : `Plan ${index + 1}`}
+                                        </Text>
+                                        <MealCard meals={formattedMeals} />
+                                        <View style={styles.historyActions}>
+                                            <Button
+                                                title="View"
+                                                onPress={() => { /* View plan details */ }}
+                                                variant="primary"
+                                                size="small"
+                                            />
+                                            <Button
+                                                title="Edit"
+                                                onPress={() => { /* Edit plan */ }}
+                                                variant="secondary"
+                                                size="small"
+                                            />
+                                        </View>
+                                    </View>
+                                );
+                            })
+                        )}
+                    </ScrollView>
+                </View>
             </View>
-            <Text style={styles.tipText}>
-                Try to have protein with every meal to help maintain muscle mass and keep you feeling full longer.
-            </Text>
-        </Animated.View>
+        </Modal>
+    );
+
+    const renderEditMealModal = () => (
+        <Modal
+            visible={showEditMeal}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setShowEditMeal(false)}
+        >
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalTitle}>Edit Meal</Text>
+                        <TouchableOpacity onPress={() => setShowEditMeal(false)}>
+                            <Feather name="x" size={24} color={consts.richGray} />
+                        </TouchableOpacity>
+                    </View>
+                    
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Meal name"
+                        value={editingMeal.content}
+                        onChangeText={(text) => setEditingMeal({ ...editingMeal, content: text })}
+                    />
+                    
+                    <View style={styles.modalActions}>
+                        <Button
+                            title="Cancel"
+                            onPress={() => setShowEditMeal(false)}
+                            variant="secondary"
+                            size="medium"
+                        />
+                        <Button
+                            title="Update Meal"
+                            onPress={handleSaveEditedMeal}
+                            variant="primary"
+                            size="medium"
+                        />
+                    </View>
+                </View>
+            </View>
+        </Modal>
     );
 
     return (
@@ -444,59 +603,56 @@ const HomeScreen: React.FC = () => {
                 {renderHeader()}
 
                 <View style={styles.tabsWrapper}>
-                    {selectedTab === 'meals' && (
-                        <DayTabs
-                            days={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
-                            selectedDay={selectedDay}
-                            onSelectDay={handleDaySelect}
-                        />
-                    )}
+                    <DayTabs
+                        days={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+                        selectedDay={selectedDay}
+                        onSelectDay={handleDaySelect}
+                    />
                 </View>
 
                 <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-                    {selectedTab === 'meals' ? (
-                        <>
-                            {currentPlan ? (
-                                <MealCard meals={weekMeals[selectedDay]} />
-                            ) : (
-                                <View style={styles.noMealPlanContainer}>
-                                    <Text style={styles.noMealPlanText}>No active meal plan</Text>
-                                    <Button 
-                                        title="Generate Meal Plan"
-                                        onPress={() => { /* Navigate to profile screen */ }}
-                                        variant="primary"
-                                        size="small"
-                                    />
-                                </View>
-                            )}
-                            {renderNutritionSummary()}
-                            {renderWaterIntake()}
-                            {renderGamification()}
-                        </>
+                    {currentPlan ? (
+                        <View style={styles.mealPlanContainer}>
+                            <MealCard meals={weekMeals[selectedDay]} />
+                            <TouchableOpacity 
+                                style={styles.editMealButton}
+                                onPress={() => handleEditMeal('plan', 'Edit meal plan')}
+                            >
+                                <Feather name="edit-2" size={16} color={consts.deepGreen} />
+                            </TouchableOpacity>
+                        </View>
                     ) : (
-                        <>
-                            <StatsTipsTab
-                                activeTab={activeStatsTab}
-                                setActiveTab={(tab) => setActiveStatsTab(tab as 'stats' | 'tips')}
+                        <View style={styles.noMealPlanContainer}>
+                            <Text style={styles.noMealPlanText}>No active meal plan</Text>
+                            <Button 
+                                title="Generate Meal Plan"
+                                onPress={handleCreateNewPlan}
+                                variant="primary"
+                                size="small"
                             />
-                            {renderTip()}
-                        </>
+                        </View>
                     )}
+                    {renderNutritionSummary()}
+                    {renderWaterIntake()}
+                    {renderGamification()}
                 </Animated.View>
 
                 <View style={styles.buttonsContainer}>
                     <Button
-                        title={selectedTab === 'meals' ? "View Stats" : "View Meals"}
-                        onPress={() => setSelectedTab(selectedTab === 'meals' ? 'stats' : 'meals')}
+                        title="Quick Add Meal"
+                        onPress={handleQuickAdd}
                         variant="primary"
                         size="medium"
                     />
-                    <Button
-                        title="Quick Add Meal"
-                        onPress={handleQuickAdd}
-                        variant="secondary"
-                        size="medium"
-                    />
+                    
+                    {currentPlan && (
+                        <Button
+                            title="Generate New Plan"
+                            onPress={handleCreateNewPlan}
+                            variant="secondary"
+                            size="medium"
+                        />
+                    )}
                 </View>
 
                 <View style={{ height: 100 }} />
@@ -783,8 +939,11 @@ const styles = StyleSheet.create({
     buttonsContainer: {
         marginTop: 16,
         marginBottom: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        gap: 12,
+        alignItems: 'center',
+    },
+    mealPlanContainer: {
+        position: 'relative',
     },
     noMealPlanContainer: {
         backgroundColor: consts.white,
@@ -871,6 +1030,98 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         gap: 12,
         marginTop: 8,
+    },
+    historyItem: {
+        backgroundColor: consts.white,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: consts.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 2,
+    },
+    historyDate: {
+        fontSize: 14,
+        color: consts.richGray,
+        marginBottom: 8,
+    },
+    historyActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 8,
+    },
+    noHistoryContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 100,
+    },
+    noHistoryText: {
+        fontSize: 16,
+        color: '#666',
+        fontStyle: 'italic',
+    },
+    headerTop: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    historyButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(28, 83, 74, 0.1)',
+        borderRadius: 20,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+    },
+    historyButtonText: {
+        color: consts.deepGreen,
+        marginLeft: 4,
+        fontWeight: '500',
+        fontSize: 14,
+    },
+    historyNavigation: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+        paddingHorizontal: 4,
+    },
+    historyNavButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+    },
+    historyNavText: {
+        color: consts.deepGreen,
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    historyIndexText: {
+        color: consts.richGray,
+        fontSize: 14,
+        fontWeight: '500',
+    },
+    disabledButton: {
+        opacity: 0.5,
+    },
+    editMealButton: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 16,
+        width: 32,
+        height: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    createPlanButton: {
+        marginTop: 16,
+        marginBottom: 8,
     },
 });
 

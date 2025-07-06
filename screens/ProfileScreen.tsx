@@ -86,14 +86,6 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
                 <View style={styles.profileHeader}>
-                    <View style={styles.avatarContainer}>
-                        <View style={styles.avatar}>
-                            <Feather name="user" size={50} color={consts.deepGreen} />
-                        </View>
-                        <TouchableOpacity style={styles.editButton}>
-                            <Feather name="edit-2" size={16} color={consts.offWhite} />
-                        </TouchableOpacity>
-                    </View>
                     <Text style={styles.userName}>John Doe</Text>
                     <Text style={styles.userStats}>Goal: Lose weight | Plan: Low Carb</Text>
                 </View>
@@ -303,36 +295,7 @@ const styles = StyleSheet.create({
     profileHeader: {
         alignItems: 'center',
         marginBottom: 24,
-    },
-    avatarContainer: {
-        position: 'relative',
-        marginBottom: 10,
-    },
-    avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: consts.offWhite,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: consts.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        elevation: 3,
-    },
-    editButton: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: consts.deepGreen,
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: consts.offWhite,
+        paddingVertical: 20,
     },
     userName: {
         fontSize: 24,
