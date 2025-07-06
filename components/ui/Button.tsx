@@ -3,39 +3,45 @@ import { TouchableOpacity, Text, StyleSheet, TouchableOpacityProps, View } from 
 import consts from '../../const/consts';
 
 interface ButtonProps extends TouchableOpacityProps {
-    title: string;
+    title?: string; // Title text (either title or text is required)
     variant?: 'primary' | 'secondary' | 'outline';
     size?: 'small' | 'medium' | 'large';
     fullWidth?: boolean;
+    text?: string; // Alternative to title (for backward compatibility)
+    textStyle?: any; // For styling text
 }
 
 const Button: React.FC<ButtonProps> = ({
     title,
+    text,
     variant = 'primary',
     size = 'medium',
     fullWidth = false,
     style,
+    textStyle,
     ...rest
 }) => {
+    // Ensure we use text or title or empty string (for safety)
+    const buttonText = text || title || '';
     const getBackgroundColor = () => {
         switch (variant) {
             case 'primary':
-                return consts.blueGrotto;
+                return consts.deepGreen;
             case 'secondary':
-                return consts.midnightBlue;
+                return consts.richGray;
             case 'outline':
                 return 'transparent';
             default:
-                return consts.blueGrotto;
+                return consts.deepGreen;
         }
     };
 
     const getTextColor = () => {
-        return variant === 'outline' ? consts.blueGrotto : consts.white;
+        return variant === 'outline' ? consts.deepGreen : consts.offWhite;
     };
 
     const getBorderStyle = () => {
-        return variant === 'outline' ? { borderWidth: 2, borderColor: consts.blueGrotto } : {};
+        return variant === 'outline' ? { borderWidth: 2, borderColor: consts.deepGreen } : {};
     };
 
     // Get fixed dimensions based on size
@@ -68,11 +74,11 @@ const Button: React.FC<ButtonProps> = ({
             {...rest}
         >
             <Text
-                style={[styles.text, { color: getTextColor() }]}
+                style={[styles.text, { color: getTextColor() }, textStyle]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
             >
-                {title}
+                {buttonText}
             </Text>
         </TouchableOpacity>
     );

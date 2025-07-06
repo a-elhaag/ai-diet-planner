@@ -8,6 +8,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import Navbar from './components/Navbar';
 import consts from './const/consts';
 import { UnitProvider } from './contexts/UnitContext';
+import { MealPlanProvider } from './contexts/MealPlanContext';
 
 // Define tab types for better type safety
 type TabName = 'home' | 'stats' | 'plan' | 'profile';
@@ -34,12 +35,14 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <UnitProvider>
-        <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-          <View style={styles.mainContainer}>
-            {renderScreen()}
-            <Navbar activeTab={activeTab} onTabPress={(tab: TabName) => setActiveTab(tab)} />
-          </View>
-        </SafeAreaView>
+        <MealPlanProvider>
+          <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+            <View style={styles.mainContainer}>
+              {renderScreen()}
+              <Navbar activeTab={activeTab} onTabPress={(tab: TabName) => setActiveTab(tab)} />
+            </View>
+          </SafeAreaView>
+        </MealPlanProvider>
       </UnitProvider>
     </SafeAreaProvider>
   );
@@ -48,7 +51,7 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: consts.ivory,
+    backgroundColor: consts.lightPeach,
   },
   mainContainer: {
     flex: 1,

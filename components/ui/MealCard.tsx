@@ -78,7 +78,7 @@ const MealCard: React.FC<MealCardProps> = ({ meals }) => {
                 completedMeals[mealKey] && styles.checkboxChecked
             ]}>
                 {completedMeals[mealKey] && (
-                    <Feather name="check" size={16} color={consts.white} />
+                    <Feather name="check" size={16} color={consts.offWhite} />
                 )}
             </View>
 
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         marginBottom: consts.spacing.xl,
     },
     card: {
-        backgroundColor: consts.white,
+        backgroundColor: consts.offWhite,
         borderRadius: 38,
         padding: 20,
         flexDirection: 'column',
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     progressText: {
         fontSize: 16,
         fontWeight: '700',
-        color: consts.midnightBlue,
+        color: consts.richGray,
         marginBottom: 8,
     },
     progressBar: {
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     },
     progressFill: {
         height: '100%',
-        backgroundColor: consts.blueGrotto,
+        backgroundColor: consts.deepGreen,
         borderRadius: 38,
     },
     mealsList: {
@@ -192,20 +192,20 @@ const styles = StyleSheet.create({
         height: 24,
         borderRadius: 38,
         borderWidth: 2,
-        borderColor: consts.babyBlue,
+        borderColor: consts.deepGreen,
         marginRight: 12,
         justifyContent: 'center',
         alignItems: 'center',
     },
     checkboxChecked: {
-        backgroundColor: consts.blueGrotto,
-        borderColor: consts.blueGrotto,
+        backgroundColor: consts.deepGreen,
+        borderColor: consts.deepGreen,
     },
     mealTextContainer: {
         flex: 1,
     },
     mealType: {
-        color: consts.blueGrotto,
+        color: consts.deepGreen,
         fontWeight: '700',
         fontSize: 16,
         marginBottom: 4,

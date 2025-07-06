@@ -9,7 +9,7 @@ import { UserMetrics, UserPreferences, Gender, DietType, DietGoal } from '../typ
 
 const ProfileScreen: React.FC = () => {
     const { unitSystem, toggleUnitSystem, formatWeight, formatHeight } = useUnit();
-    const { mealPlan, loading, error, generatePlan, calculateCalorieNeeds } = useMealPlan();
+    const { mealPlan, loading, error, generatePlan } = useMealPlan();
 
     // Mock user data - in a real app, this would come from a user profile store or API
     // Assuming height is 5'11" (71 inches) and weight is 152 lbs

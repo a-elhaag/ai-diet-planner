@@ -14,6 +14,7 @@ import StatsTipsTab from '../components/ui/StatsTipsTab';
 import Button from '../components/ui/Button';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
+import { useMealPlan } from '../hooks/useMealPlan';
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +27,9 @@ const HomeScreen: React.FC = () => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(30)).current;
     const progressAnim = useRef(new Animated.Value(0)).current;
+    
+    // Get meal plan data from context
+    const { mealPlan, planHistory } = useMealPlan();
 
     useEffect(() => {
         Animated.parallel([
@@ -65,7 +69,16 @@ const HomeScreen: React.FC = () => {
         ]).start();
     }, [selectedTab]);
 
-    const weekMeals = [
+    // Use real meal plan data if available, otherwise fallback to mock data
+    const weekMeals = mealPlan?.weeklyPlans ? Object.keys(mealPlan.weeklyPlans).map(day => {
+        const dailyPlan = mealPlan.weeklyPlans?.[day];
+        return {
+            breakfast: dailyPlan?.breakfast?.name || "No breakfast plan",
+            lunch: dailyPlan?.lunch?.name || "No lunch plan",
+            dinner: dailyPlan?.dinner?.name || "No dinner plan",
+            snacks: dailyPlan?.snacks?.map(snack => snack.name) || ["No snacks planned"]
+        };
+    }) : [
         {
             breakfast: "Greek yogurt with berries and honey",
             lunch: "Grilled chicken salad with avocado",
@@ -114,7 +127,13 @@ const HomeScreen: React.FC = () => {
     const dayOfWeek = today.getDay();
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    const nutritionSummary = {
+    // Use real nutrition data if available, otherwise fallback to mock data
+    const nutritionSummary = mealPlan?.dailyTotals ? {
+        calories: mealPlan.dailyTotals.calories,
+        protein: mealPlan.dailyTotals.protein,
+        carbs: mealPlan.dailyTotals.carbohydrates, // Map to carbs
+        fat: mealPlan.dailyTotals.fats // Map to fat
+    } : {
         calories: 1850,
         protein: 120,
         carbs: 180,
@@ -274,7 +293,19 @@ const HomeScreen: React.FC = () => {
                 <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
                     {selectedTab === 'meals' ? (
                         <>
-                            <MealCard meals={weekMeals[selectedDay]} />
+                            {mealPlan ? (
+                                <MealCard meals={weekMeals[selectedDay]} />
+                            ) : (
+                                <View style={styles.noMealPlanContainer}>
+                                    <Text style={styles.noMealPlanText}>No active meal plan</Text>
+                                    <Button 
+                                        title="Generate Meal Plan"
+                                        onPress={() => { /* Navigate to profile screen */ }}
+                                        variant="primary"
+                                        size="small"
+                                    />
+                                </View>
+                            )}
                             {renderNutritionSummary()}
                             {renderWaterIntake()}
                         </>
@@ -298,6 +329,14 @@ const HomeScreen: React.FC = () => {
                         variant="primary"
                         size="medium"
                     />
+                    {mealPlan && selectedTab === 'meals' && planHistory.length > 0 && (
+                        <Button
+                            title="View Previous Plans"
+                            onPress={() => { /* Navigate to plan history screen */ }}
+                            variant="secondary"
+                            size="medium"
+                        />
+                    )}
                 </View>
 
                 <View style={{ height: 100 }} />
@@ -309,7 +348,7 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: consts.ivory,
+        backgroundColor: consts.offWhite,
     },
     scrollView: {
         flex: 1,
@@ -324,7 +363,7 @@ const styles = StyleSheet.create({
     greeting: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: consts.midnightBlue,
+        color: consts.richGray,
         marginBottom: 4,
     },
     date: {
@@ -500,6 +539,28 @@ const styles = StyleSheet.create({
     buttonsContainer: {
         marginTop: 16,
         marginBottom: 15, // Increased from 80 to ensure content doesn't overlap with navbar
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    noMealPlanContainer: {
+        backgroundColor: consts.white,
+        borderRadius: 28,
+        padding: 24,
+        marginVertical: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: consts.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 2,
+    },
+    noMealPlanText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: consts.midnightBlue,
+        marginBottom: 16,
+        textAlign: 'center',
     },
 });
 

@@ -87,10 +87,10 @@ const styles = StyleSheet.create({
         width: 70, // Reduced from 90
         height: 46, // Reduced from 60
         marginHorizontal: 3, // Reduced from 5
-        backgroundColor: consts.white,
+        backgroundColor: consts.offWhite,
         borderRadius: 20, // Reduced from 26
         borderWidth: 1,
-        borderColor: consts.babyBlue,
+        borderColor: consts.deepGreen,
         overflow: 'hidden',
     },
     dayTabContent: {
@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
         padding: 2, // Reduced from 4
     },
     selectedDayTab: {
-        backgroundColor: consts.blueGrotto,
-        borderColor: consts.blueGrotto,
+        backgroundColor: consts.deepGreen,
+        borderColor: consts.deepGreen,
     },
     freeDayTab: {
         borderWidth: 1.5,
@@ -110,22 +110,22 @@ const styles = StyleSheet.create({
     dayText: {
         fontSize: 16, // Reduced from 20
         fontWeight: '400',
-        color: consts.blueGrotto,
+        color: consts.deepGreen,
         textAlign: 'center',
     },
     selectedDayText: {
-        color: consts.white,
+        color: consts.offWhite,
         fontWeight: '800',
     },
     freeDayLabel: {
         fontSize: 9, // Reduced from 11
         marginTop: 2, // Reduced from 3
-        color: consts.blueGrotto,
+        color: consts.deepGreen,
         fontStyle: 'italic',
         textAlign: 'center',
     },
     selectedFreeDayLabel: {
-        color: consts.white,
+        color: consts.offWhite,
     },
 });
 

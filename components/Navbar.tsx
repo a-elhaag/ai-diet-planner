@@ -76,7 +76,7 @@ const NavItem: React.FC<NavItemProps> = ({ iconName, text, isActive, onPress }) 
                 <Feather
                     name={iconName}
                     size={26}
-                    color={isActive ? consts.blueGrotto : '#6b7280'}
+                    color={isActive ? consts.deepGreen : '#6b7280'}
                     style={styles.icon}
                 />
             </Animated.View>
@@ -122,7 +122,7 @@ const FloatingButton: React.FC<{
                 activeOpacity={0.8}
             >
                 <View style={styles.actionIconContainer}>
-                    <Feather name={item.icon} size={22} color={consts.white} />
+                    <Feather name={item.icon} size={22} color={consts.offWhite} />
                 </View>
                 <View style={styles.actionLabelContainer}>
                     <Text style={styles.actionLabel}>{item.text}</Text>
@@ -308,7 +308,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
                     accessibilityLabel="Open meal options"
                 >
                     <Animated.View style={{ transform: [{ rotate: rotationDegree }] }}>
-                        <Feather name="plus" size={28} color={consts.white} />
+                        <Feather name="plus" size={28} color={consts.offWhite} />
                     </Animated.View>
                 </TouchableOpacity>
             </View>
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     activeText: {
-        color: consts.blueGrotto,
+        color: consts.deepGreen,
         fontWeight: '600',
     },
     placeholder: {
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
         width: 48, // Reduced from 66
         height: 48, // Reduced from 66
         borderRadius: 29, // Half of width/height
-        backgroundColor: consts.blueGrotto,
+        backgroundColor: consts.deepGreen,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: consts.black,
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     actionButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: consts.white,
+        backgroundColor: consts.offWhite,
         borderRadius: 28,
         shadowColor: consts.black,
         shadowOffset: { width: 0, height: 2 },
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
         width: 38, // Reduced from 42
         height: 38, // Reduced from 42
         borderRadius: 19, // Half of width/height
-        backgroundColor: consts.blueGrotto,
+        backgroundColor: consts.deepGreen,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
         flex: 1, // Take remaining space
     },
     actionLabel: {
-        color: consts.midnightBlue,
+        color: consts.richGray,
         fontWeight: '600',
         fontSize: 15, // Increased font size
     }

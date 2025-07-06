@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     View,
     Text,
@@ -6,6 +6,7 @@ import {
     TouchableOpacity
 } from 'react-native';
 import consts from '../../const/consts';
+import { useMealPlan } from '../../hooks/useMealPlan';
 
 interface StatsTipsTabProps {
     activeTab: string;
@@ -13,8 +14,34 @@ interface StatsTipsTabProps {
 }
 
 const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) => {
-    // Mock data
-    const tips = "Try to drink water 30 minutes before meals to help with portion control and improve digestion.";
+    // Get meal plan data from context
+    const { mealPlan, planHistory } = useMealPlan();
+
+    // Generate tips based on meal plan data
+    const tips = useMemo(() => {
+        if (!mealPlan) {
+            return "Generate a meal plan to get personalized nutrition tips.";
+        }
+
+        // Generate a random tip based on meal plan data
+        const tipOptions = [
+            "Try to drink water 30 minutes before meals to help with portion control and improve digestion.",
+            `Including more ${mealPlan.dailyTotals.protein > 100 ? 'vegetables' : 'protein'} in your meals can help you stay full longer.`,
+            "Consider meal prepping on weekends to make it easier to stick to your plan during busy weekdays.",
+            "Eating slowly can help with digestion and may reduce overall food intake.",
+            "Aim for at least 5 servings of vegetables and fruits each day for optimal nutrition."
+        ];
+
+        return tipOptions[Math.floor(Math.random() * tipOptions.length)];
+    }, [mealPlan]);
+
+    // Calculate adherence stats
+    const stats = useMemo(() => {
+        const daysOnPlan = mealPlan ? "1/7" : "0/7"; // This would ideally track actual adherence
+        const adherencePercentage = mealPlan ? "85%" : "0%";
+        
+        return { daysOnPlan, adherencePercentage };
+    }, [mealPlan]);
 
     return (
         <View style={styles.container}>
@@ -45,13 +72,13 @@ const StatsTipsTab: React.FC<StatsTipsTabProps> = ({ activeTab, setActiveTab }) 
                         <View style={styles.statsRow}>
                             <View style={styles.statItem}>
                                 <View style={styles.statBubble}>
-                                    <Text style={styles.statValue}>5/7</Text>
+                                    <Text style={styles.statValue}>{stats.daysOnPlan}</Text>
                                 </View>
                                 <Text style={styles.statLabel}>Days on Plan</Text>
                             </View>
                             <View style={styles.statItem}>
                                 <View style={[styles.statBubble, styles.secondaryBubble]}>
-                                    <Text style={styles.statValue}>85%</Text>
+                                    <Text style={styles.statValue}>{stats.adherencePercentage}</Text>
                                 </View>
                                 <Text style={styles.statLabel}>Adherence</Text>
                             </View>
@@ -82,7 +109,7 @@ const styles = StyleSheet.create({
     tabs: {
         flexDirection: 'row',
         borderRadius: consts.radius, // Use radius from constants
-        backgroundColor: consts.ivory,
+        backgroundColor: consts.lightPeach,
         overflow: 'hidden',
     },
     tab: {
@@ -91,20 +118,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     activeTab: {
-        backgroundColor: consts.blueGrotto,
+        backgroundColor: consts.deepGreen,
     },
     tabText: {
         fontWeight: '600',
         fontSize: 16,
-        color: consts.midnightBlue,
+        color: consts.richGray,
         opacity: 0.7,
     },
     activeTabText: {
-        color: consts.white,
+        color: consts.offWhite,
         opacity: 1,
     },
     contentContainer: {
-        backgroundColor: consts.white,
+        backgroundColor: consts.offWhite,
         borderRadius: consts.radius,
         padding: 20,
         marginTop: 20,
@@ -122,7 +149,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: consts.midnightBlue,
+        color: consts.richGray,
     },
     statsRow: {
         flexDirection: 'row',
@@ -134,23 +161,23 @@ const styles = StyleSheet.create({
     statBubble: {
         width: 70,
         height: 70,
-        backgroundColor: consts.blueGrotto,
+        backgroundColor: consts.deepGreen,
         borderRadius: 35, // Fully circular
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
     },
     secondaryBubble: {
-        backgroundColor: consts.babyBlue,
+        backgroundColor: consts.deepGreen,
     },
     statValue: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: consts.white,
+        color: consts.offWhite,
     },
     statLabel: {
         fontSize: 16,
-        color: consts.midnightBlue,
+        color: consts.richGray,
         marginTop: 6,
         fontWeight: '500',
     },
@@ -164,7 +191,7 @@ const styles = StyleSheet.create({
     aiIconBubble: {
         width: 60,
         height: 60,
-        backgroundColor: consts.ivory,
+        backgroundColor: consts.lightPeach,
         borderRadius: 30, // Fully circular
         justifyContent: 'center',
         alignItems: 'center',
@@ -177,7 +204,7 @@ const styles = StyleSheet.create({
     tipText: {
         flex: 1,
         fontSize: 16,
-        color: consts.midnightBlue,
+        color: consts.richGray,
         lineHeight: 24,
     },
 });

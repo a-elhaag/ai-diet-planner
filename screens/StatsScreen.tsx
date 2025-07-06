@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -10,6 +10,7 @@ import {
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
 import { useUnit } from '../contexts/UnitContext';
+import { useMealPlan } from '../hooks/useMealPlan';
 
 interface MetricCardProps {
     title: string;
@@ -29,7 +30,7 @@ interface ProgressCardProps {
     unit?: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, color = consts.blueGrotto }) => {
+const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, color = consts.deepGreen }) => {
     return (
         <View style={[styles.metricCard, { borderLeftColor: color }]}>
             <View style={[styles.iconContainer, { backgroundColor: `${color}20` }]}>
@@ -41,12 +42,12 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, col
                 <Feather
                     name={change >= 0 ? "arrow-up" : "arrow-down"}
                     size={12}
-                    color={change >= 0 ? consts.babyBlue : consts.babyBlue}
+                    color={change >= 0 ? consts.deepGreen : consts.richGray}
                 />
                 <Text
                     style={[
                         styles.changeText,
-                        { color: change >= 0 ? consts.babyBlue : consts.babyBlue }
+                        { color: change >= 0 ? consts.deepGreen : consts.richGray }
                     ]}
                 >
                     {Math.abs(change)}%
@@ -98,13 +99,23 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
 const StatsScreen: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'overview' | 'nutrition' | 'body'>('overview');
     const { unitSystem, formatWeight } = useUnit();
+    const { mealPlan, planHistory } = useMealPlan();
 
-    // Mock data for progress cards
-    const caloriesData = {
+    // Use real meal plan data if available
+    const hasActivePlan = !!mealPlan;
+    const hasPlanHistory = planHistory.length > 0;
+    
+    // Extract nutritional data from meal plan if available
+    const caloriesData = mealPlan ? {
+        current: mealPlan.dailyTotals.calories,
+        target: 2100, // This could come from user profile
+        percentage: Math.round((mealPlan.dailyTotals.calories / 2100) * 100),
+        color: consts.deepGreen
+    } : {
         current: 1850,
         target: 2100,
         percentage: 88,
-        color: '#F2994A'
+        color: consts.deepGreen
     };
 
     // Weight data in lbs (imperial)
@@ -112,7 +123,7 @@ const StatsScreen: React.FC = () => {
         currentLbs: 183.2,
         targetLbs: 175,
         percentage: 18,
-        color: consts.babyBlue
+        color: consts.deepGreen
     };
 
     // Format for display based on unit system
@@ -124,10 +135,41 @@ const StatsScreen: React.FC = () => {
     const targetWeightValue = formatWeight(weightData.targetLbs);
     const startingWeightValue = formatWeight(185);
 
-    const macrosData = [
-        { name: 'Protein', current: 114, target: 120, percentage: 95, color: '#9B51E0', icon: 'box' as React.ComponentProps<typeof Feather>['name'] },
-        { name: 'Carbs', current: 210, target: 225, percentage: 93, color: '#F2994A', icon: 'pie-chart' as React.ComponentProps<typeof Feather>['name'] },
-        { name: 'Fats', current: 60, target: 65, percentage: 92, color: '#219653', icon: 'droplet' as React.ComponentProps<typeof Feather>['name'] }
+    // Target values for macros - could come from user profile
+    const targetProtein = 120;
+    const targetCarbs = 225;
+    const targetFats = 65;
+
+    // Use meal plan data if available, otherwise use mock data
+    const macrosData = mealPlan ? [
+        { 
+            name: 'Protein', 
+            current: mealPlan.dailyTotals.protein, 
+            target: targetProtein, 
+            percentage: Math.round((mealPlan.dailyTotals.protein / targetProtein) * 100), 
+            color: '#9B51E0', 
+            icon: 'box' as React.ComponentProps<typeof Feather>['name'] 
+        },
+        { 
+            name: 'Carbs', 
+            current: mealPlan.dailyTotals.carbohydrates, 
+            target: targetCarbs, 
+            percentage: Math.round((mealPlan.dailyTotals.carbohydrates / targetCarbs) * 100), 
+            color: consts.deepGreen, 
+            icon: 'pie-chart' as React.ComponentProps<typeof Feather>['name'] 
+        },
+        { 
+            name: 'Fats', 
+            current: mealPlan.dailyTotals.fats, 
+            target: targetFats, 
+            percentage: Math.round((mealPlan.dailyTotals.fats / targetFats) * 100), 
+            color: consts.richGray, 
+            icon: 'droplet' as React.ComponentProps<typeof Feather>['name'] 
+        }
+    ] : [
+        { name: 'Protein', current: 114, target: targetProtein, percentage: 95, color: '#9B51E0', icon: 'box' as React.ComponentProps<typeof Feather>['name'] },
+        { name: 'Carbs', current: 210, target: targetCarbs, percentage: 93, color: consts.deepGreen, icon: 'pie-chart' as React.ComponentProps<typeof Feather>['name'] },
+        { name: 'Fats', current: 60, target: targetFats, percentage: 92, color: consts.richGray, icon: 'droplet' as React.ComponentProps<typeof Feather>['name'] }
     ];
 
     const waterData = {
@@ -165,30 +207,52 @@ const StatsScreen: React.FC = () => {
         );
     };
 
+    // Get current date range for display
+    const getCurrentDateRange = () => {
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // First day of current week (Sunday)
+        
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Last day of current week (Saturday)
+        
+        const formatDate = (date: Date) => {
+            const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' };
+            return date.toLocaleDateString(undefined, options);
+        };
+        
+        return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}, ${today.getFullYear()}`;
+    };
+
     const renderOverviewTab = () => {
+        // Calculate average calories from meal plan if available
+        const averageCalories = mealPlan ? mealPlan.dailyTotals.calories.toLocaleString() : "2,036";
+        const proteinIntake = mealPlan ? `${Math.round(mealPlan.dailyTotals.protein)}g` : "114g";
+        
         return (
             <View>
                 <View style={styles.dateHeader}>
-                    <Text style={styles.dateText}>April 7 - 13, 2025</Text>
+                    <Text style={styles.dateText}>{getCurrentDateRange()}</Text>
                 </View>
 
                 <View style={styles.metricsContainer}>
                     <MetricCard
                         title="Average Calories"
-                        value="2,036"
+                        value={averageCalories}
                         change={3.2}
                         icon="zap"
+                        color={consts.deepGreen}
                     />
                     <MetricCard
                         title="Weight Change"
                         value={weightChangeValue}
                         change={-0.98}
                         icon="trending-down"
-                        color={consts.midnightBlue}
+                        color={consts.richGray}
                     />
                     <MetricCard
                         title="Protein Intake"
-                        value="114g"
+                        value={proteinIntake}
                         change={5.5}
                         icon="box"
                         color="#9B51E0"
@@ -198,7 +262,7 @@ const StatsScreen: React.FC = () => {
                         value="6.1 glasses"
                         change={-10}
                         icon="droplet"
-                        color={consts.babyBlue}
+                        color={consts.deepGreen}
                     />
                 </View>
 
@@ -227,6 +291,43 @@ const StatsScreen: React.FC = () => {
         );
     };
 
+    // Generate personalized insights based on meal plan data
+    const generateNutritionInsights = () => {
+        if (!mealPlan) {
+            return "Generate a meal plan to see personalized nutrition insights.";
+        }
+        
+        const { protein, carbohydrates, fats } = mealPlan.dailyTotals;
+        
+        // Calculate macronutrient ratios
+        const totalMacros = protein + carbohydrates + fats;
+        const proteinRatio = Math.round((protein / totalMacros) * 100);
+        const carbsRatio = Math.round((carbohydrates / totalMacros) * 100);
+        const fatsRatio = Math.round((fats / totalMacros) * 100);
+        
+        // Generate insights based on ratio analysis
+        let insights = [];
+        
+        if (proteinRatio < 20) {
+            insights.push("Consider increasing your protein intake to support muscle maintenance and recovery.");
+        } else if (proteinRatio > 35) {
+            insights.push("Your protein intake is high. Ensure you're drinking enough water to help your kidneys process the protein.");
+        } else {
+            insights.push("Your protein intake is well-balanced.");
+        }
+        
+        if (carbsRatio < 40) {
+            insights.push("Your carbohydrate intake is relatively low. Ensure you're getting enough fiber.");
+        } else if (carbsRatio > 60) {
+            insights.push("Consider balancing your meal plan with more protein and healthy fats.");
+        }
+        
+        // Add water recommendation
+        insights.push("Aim for 8 glasses of water daily for optimal hydration.");
+        
+        return insights.join(" ");
+    };
+
     const renderNutritionTab = () => {
         return (
             <View>
@@ -250,19 +351,18 @@ const StatsScreen: React.FC = () => {
                     value={waterData.current}
                     target={waterData.target}
                     percentage={waterData.percentage}
-                    color={waterData.color}
+                    color={consts.deepGreen}
                     icon="droplet"
                     unit=" glasses"
                 />
 
                 <View style={styles.nutritionInfoCard}>
                     <View style={styles.nutritionInfoHeader}>
-                        <Feather name="info" size={16} color={consts.midnightBlue} />
+                        <Feather name="info" size={16} color={consts.richGray} />
                         <Text style={styles.nutritionInfoTitle}>Nutrition Insight</Text>
                     </View>
                     <Text style={styles.nutritionInfoText}>
-                        Your protein intake is consistent with your goals.
-                        Consider increasing water intake by 1-2 glasses daily for optimal hydration.
+                        {generateNutritionInsights()}
                     </Text>
                 </View>
             </View>
@@ -362,7 +462,7 @@ const StatsScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: consts.ivory,
+        backgroundColor: consts.offWhite,
     },
     scrollContainer: {
         flex: 1,
@@ -373,7 +473,7 @@ const styles = StyleSheet.create({
     screenTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: consts.midnightBlue,
+        color: consts.richGray,
         marginBottom: 2, // Decreased from 4
         paddingHorizontal: 4, // Added horizontal padding
     },
