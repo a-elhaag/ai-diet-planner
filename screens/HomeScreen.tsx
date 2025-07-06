@@ -514,12 +514,12 @@ const HomeScreen: React.FC = () => {
                             </View>
                         ) : (
                             planHistory.map((plan, index) => {
-                                // Convert plan.meals to the expected format for MealCard
+                                // For now, create a simple display from meal names
                                 const formattedMeals = {
-                                    breakfast: plan.meals.find(meal => meal.category === 'breakfast')?.name || "No breakfast",
-                                    lunch: plan.meals.find(meal => meal.category === 'lunch')?.name || "No lunch", 
-                                    dinner: plan.meals.find(meal => meal.category === 'dinner')?.name || "No dinner",
-                                    snacks: plan.meals.filter(meal => meal.category === 'snack').map(meal => meal.name) || []
+                                    breakfast: plan.meals[0]?.name || "No breakfast",
+                                    lunch: plan.meals[1]?.name || "No lunch", 
+                                    dinner: plan.meals[2]?.name || "No dinner",
+                                    snacks: plan.meals.slice(3).map(meal => meal.name) || []
                                 };
                                 
                                 return (
@@ -666,7 +666,7 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: consts.offWhite,
+        backgroundColor: consts.lightPeach, // Peachy background
     },
     scrollView: {
         flex: 1,

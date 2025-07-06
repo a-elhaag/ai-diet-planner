@@ -24,7 +24,11 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const ChatScreen: React.FC = () => {
+interface ChatScreenProps {
+  onClose: () => void;
+}
+
+const ChatScreen: React.FC<ChatScreenProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
@@ -206,10 +210,9 @@ const ChatScreen: React.FC = () => {
           <Feather name="message-circle" size={24} color={consts.deepGreen} />
           <Text style={styles.headerTitle}>AI Diet Coach</Text>
         </View>
-        <View style={styles.statusIndicator}>
-          <View style={styles.onlineDot} />
-          <Text style={styles.statusText}>Online</Text>
-        </View>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Feather name="x" size={24} color={consts.deepGreen} />
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -256,14 +259,14 @@ const ChatScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: consts.offWhite,
+    backgroundColor: consts.lightPeach, // Peachy background
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: consts.white,
+    backgroundColor: consts.white, // White component
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },
@@ -277,21 +280,10 @@ const styles = StyleSheet.create({
     color: consts.deepGreen,
     marginLeft: 8,
   },
-  statusIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  onlineDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#22c55e',
-    marginRight: 6,
-  },
-  statusText: {
-    fontSize: 12,
-    color: '#22c55e',
-    fontWeight: '500',
+  closeButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(28, 83, 74, 0.1)',
   },
   messagesContainer: {
     flex: 1,
@@ -318,7 +310,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 4,
   },
   aiBubble: {
-    backgroundColor: consts.white,
+    backgroundColor: consts.white, // White component
     borderBottomLeftRadius: 4,
     shadowColor: consts.black,
     shadowOffset: { width: 0, height: 1 },
@@ -358,7 +350,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   quickActionsContainer: {
-    backgroundColor: consts.white,
+    backgroundColor: consts.white, // White component
     padding: 12,
     borderTopWidth: 1,
     borderTopColor: '#e2e8f0',
@@ -388,7 +380,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     padding: 16,
-    backgroundColor: consts.white,
+    backgroundColor: consts.white, // White component
   },
   textInput: {
     flex: 1,

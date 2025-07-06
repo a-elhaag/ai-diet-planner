@@ -246,8 +246,8 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabPress }) => {
             icon: 'message-circle',
             text: 'AI Chat',
             onPress: () => {
-                console.log('Open AI chat coach');
-                // Open AI chat coach for diet advice and support
+                // Navigate to chat tab
+                onTabPress('plan');
             }
         },
         {

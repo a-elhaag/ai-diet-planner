@@ -462,7 +462,7 @@ const StatsScreen: React.FC = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: consts.offWhite,
+        backgroundColor: consts.lightPeach, // Peachy background
     },
     scrollContainer: {
         flex: 1,

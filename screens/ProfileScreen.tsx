@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     section: {
-        backgroundColor: consts.offWhite,
+        backgroundColor: consts.white, // White component
         borderRadius: 16,
         padding: 16,
         marginBottom: 16,
