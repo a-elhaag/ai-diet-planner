@@ -20,7 +20,11 @@ import { useMealPlanContext } from '../contexts/MealPlanContext';
 
 const { width } = Dimensions.get('window');
 
-const HomeScreen: React.FC = () => {
+interface HomeScreenProps {
+    onTabPress?: (tab: 'home' | 'stats' | 'plan' | 'profile') => void;
+}
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ onTabPress }) => {
     const [userName, setUserName] = useState('John'); // Default name, would come from user profile
     const [selectedDay, setSelectedDay] = useState(0);
     const [showQuickAdd, setShowQuickAdd] = useState(false);
@@ -638,21 +642,27 @@ const HomeScreen: React.FC = () => {
                 </Animated.View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
-                        title="Quick Add Meal"
-                        onPress={handleQuickAdd}
-                        variant="primary"
-                        size="medium"
-                    />
-                    
-                    {currentPlan && (
-                        <Button
-                            title="Generate New Plan"
-                            onPress={handleCreateNewPlan}
-                            variant="secondary"
-                            size="medium"
-                        />
-                    )}
+                    <View style={styles.actionButtonsGrid}>
+                        <TouchableOpacity style={styles.actionButton} onPress={() => onTabPress?.('plan')}>
+                            <Feather name="message-circle" size={20} color={consts.deepGreen} />
+                            <Text style={styles.actionButtonText}>AI Chat</Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity style={styles.actionButton} onPress={handleCreateNewPlan}>
+                            <Feather name="refresh-cw" size={20} color={consts.deepGreen} />
+                            <Text style={styles.actionButtonText}>New Plan</Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity style={styles.actionButton} onPress={handleQuickAdd}>
+                            <Feather name="camera" size={20} color={consts.deepGreen} />
+                            <Text style={styles.actionButtonText}>Quick Add</Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity style={styles.actionButton} onPress={() => Alert.alert('Add Note', 'Note feature coming soon!')}>
+                            <Feather name="edit-3" size={20} color={consts.deepGreen} />
+                            <Text style={styles.actionButtonText}>Add Note</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View style={{ height: 100 }} />
@@ -674,6 +684,7 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 20,
+        marginTop: consts.platform.topMargin, // Extra top margin for Android
     },
     headerTextContainer: {
         marginBottom: 16,
@@ -1122,6 +1133,34 @@ const styles = StyleSheet.create({
     createPlanButton: {
         marginTop: 16,
         marginBottom: 8,
+    },
+    // Action buttons grid styles
+    actionButtonsGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginTop: 16,
+        gap: 12,
+    },
+    actionButton: {
+        backgroundColor: consts.white,
+        borderRadius: 16,
+        padding: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '48%',
+        minHeight: 80,
+        shadowColor: consts.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    actionButtonText: {
+        color: consts.deepGreen,
+        fontSize: 14,
+        fontWeight: '600',
+        marginTop: 8,
     },
 });
 

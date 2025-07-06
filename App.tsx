@@ -57,13 +57,13 @@ export default function App() {
 
     switch (activeTab) {
       case 'home':
-        return <HomeScreen />;
+        return <HomeScreen onTabPress={handleTabPress} />;
       case 'stats':
         return <StatsScreen />;
       case 'profile':
         return <ProfileScreen />;
       default:
-        return <HomeScreen />;
+        return <HomeScreen onTabPress={handleTabPress} />;
     }
   };
 

@@ -15,6 +15,32 @@ interface QuickMeal {
   photo?: string;
 }
 
+interface UserInfo {
+  name: string;
+  email?: string;
+  age: number;
+  weight: number;
+  height: number;
+  gender: 'male' | 'female';
+  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  unit: 'metric' | 'imperial';
+}
+
+interface ProgressTracking {
+  resetPeriod: 'daily' | 'weekly' | 'monthly';
+  lastResetDate: string;
+  weeklyGoals: {
+    mealsLogged: number;
+    hydrationDays: number;
+    exerciseDays: number;
+  };
+  currentWeekProgress: {
+    mealsLogged: number;
+    hydrationDays: number;
+    exerciseDays: number;
+  };
+}
+
 interface UserProgress {
   points: number;
   badges: string[];
@@ -30,6 +56,7 @@ interface UserProgress {
     target: number;
     completed: boolean;
   }[];
+  tracking: ProgressTracking;
 }
 
 interface DailyTracking {

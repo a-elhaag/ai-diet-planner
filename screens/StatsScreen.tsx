@@ -469,6 +469,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: 12, // Decreased from 16
+        paddingTop: 12 + consts.platform.topMargin, // Extra top padding for Android
     },
     screenTitle: {
         fontSize: 24,

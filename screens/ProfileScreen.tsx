@@ -291,6 +291,7 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
         padding: 16,
+        paddingTop: 16 + consts.platform.topMargin, // Extra top padding for Android
     },
     profileHeader: {
         alignItems: 'center',

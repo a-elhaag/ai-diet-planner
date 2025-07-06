@@ -12,9 +12,10 @@ const scale = (size: number): number => {
 // Platform-specific values
 const platformValues = {
     navbarBottom: Platform.OS === 'android' ? 20 : 0,
-    contentPadding: Platform.OS === 'android' ? 110 : 90,
+    contentPadding: Platform.OS === 'android' ? 130 : 90, // Increased Android padding
     cardHeight: Platform.OS === 'android' ? 500 : 470,
     buttonShadow: Platform.OS === 'android' ? 2 : 4,
+    topMargin: Platform.OS === 'android' ? 20 : 8, // Extra top margin for Android
 };
 
 const consts = {

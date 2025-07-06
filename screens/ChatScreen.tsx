@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
+    paddingTop: 16 + consts.platform.topMargin, // Extra top padding for Android
     backgroundColor: consts.white, // White component
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
