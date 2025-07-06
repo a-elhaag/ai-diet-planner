@@ -26,7 +26,6 @@ const PlanScreen: React.FC = () => {
     const [selectedDay, setSelectedDay] = useState(0);
     const [viewingHistory, setViewingHistory] = useState(false);
     const [historyIndex, setHistoryIndex] = useState(0);
-    const [loading, setLoading] = useState(false);
     const [showChatModal, setShowChatModal] = useState(false);
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
         {
@@ -38,8 +37,9 @@ const PlanScreen: React.FC = () => {
     ]);
     const [chatInput, setChatInput] = useState('');
     
-    // Get data from context
+    // Get data from context instead of hook
     const { currentPlan, planHistory } = useMealPlanContext();
+    const [loading, setLoading] = useState(false);
     
     // Days of the week for tab labels
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -203,13 +203,11 @@ const PlanScreen: React.FC = () => {
             <View style={styles.chatContainer}>
                 <View style={styles.chatHeader}>
                     <View style={styles.chatHeaderLeft}>
-                        <View style={styles.chatHeaderIcon}>
-                            <Feather name="message-circle" size={24} color={consts.deepGreen} />
-                        </View>
+                        <Feather name="message-circle" size={24} color={consts.white} />
                         <Text style={styles.chatHeaderTitle}>AI Diet Coach</Text>
                     </View>
                     <TouchableOpacity onPress={() => setShowChatModal(false)}>
-                        <Feather name="x" size={24} color={consts.richGray} />
+                        <Feather name="x" size={24} color={consts.white} />
                     </TouchableOpacity>
                 </View>
                 
@@ -324,20 +322,20 @@ const PlanScreen: React.FC = () => {
                     fullWidth
                 />
 
-                <View style={styles.aiCoachContainer}>
-                    <TouchableOpacity
-                        style={styles.aiCoachButton}
-                        onPress={() => setShowChatModal(true)}
-                    >
-                        <Feather name="message-circle" size={20} color={consts.white} />
-                        <Text style={styles.aiCoachButtonText}>Chat with AI Coach</Text>
-                    </TouchableOpacity>
-                </View>
-
                 {/* Extra padding space to avoid navbar overlap */}
                 <View style={styles.bottomSpacer} />
             </ScrollView>
-            
+
+            {/* Chat Coach Button */}
+            <TouchableOpacity 
+                style={styles.chatCoachButton}
+                onPress={() => setShowChatModal(true)}
+            >
+                <Feather name="message-circle" size={24} color={consts.white} />
+                <Text style={styles.chatCoachButtonText}>Chat with Coach</Text>
+            </TouchableOpacity>
+
+            {/* Chat Coach Modal */}
             {renderChatModal()}
         </View>
     );
@@ -417,140 +415,131 @@ const styles = StyleSheet.create({
         color: consts.richGray,
         fontSize: 16,
     },
-    aiCoachContainer: {
-        marginTop: 16,
-        marginBottom: 8,
-    },
-    aiCoachButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    button: {
         backgroundColor: consts.deepGreen,
-        borderRadius: 28,
-        paddingHorizontal: 20,
-        paddingVertical: 14,
-        justifyContent: 'center',
-        shadowColor: consts.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 2,
+        borderRadius: 30,
+        padding: 16,
+        alignItems: 'center',
+        marginVertical: 24,
     },
-    aiCoachButtonText: {
-        color: consts.white,
-        marginLeft: 8,
+    buttonText: {
+        color: consts.offWhite,
         fontWeight: '600',
         fontSize: 16,
     },
     bottomSpacer: {
         height: 25,
     },
-    // Chat Modal Styles
+    chatCoachButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 16,
+        right: 16,
+        backgroundColor: consts.deepGreen,
+        borderRadius: 30,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        elevation: 4,
+    },
+    chatCoachButtonText: {
+        color: consts.white,
+        marginLeft: 8,
+        fontWeight: '500',
+        fontSize: 16,
+    },
     chatContainer: {
         flex: 1,
         backgroundColor: consts.offWhite,
-        paddingTop: 60,
+        paddingTop: 40,
+        paddingHorizontal: 16,
     },
     chatHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingBottom: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e2e8f0',
+        marginBottom: 16,
     },
     chatHeaderLeft: {
         flexDirection: 'row',
         alignItems: 'center',
     },
-    chatHeaderIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(28, 83, 74, 0.1)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
-    },
     chatHeaderTitle: {
-        color: consts.richGray,
+        color: consts.white,
         fontWeight: 'bold',
         fontSize: 18,
+        marginLeft: 8,
     },
     chatMessages: {
         flex: 1,
-        paddingHorizontal: 16,
+        marginBottom: 16,
     },
     chatMessagesContent: {
-        paddingTop: 16,
         paddingBottom: 16,
     },
     chatMessage: {
         marginBottom: 12,
         maxWidth: '80%',
         borderRadius: 16,
-        padding: 12,
+        padding: 10,
         position: 'relative',
     },
     userMessage: {
-        backgroundColor: consts.babyBlue,
+        backgroundColor: consts.lightPeach,
         alignSelf: 'flex-end',
-        borderTopRightRadius: 4,
+        borderTopRightRadius: 0,
     },
     aiMessage: {
         backgroundColor: consts.deepGreen,
         alignSelf: 'flex-start',
-        borderTopLeftRadius: 4,
+        borderTopLeftRadius: 0,
     },
     messageText: {
+        color: consts.richGray,
         fontSize: 16,
         lineHeight: 22,
-        paddingBottom: 20,
     },
     userMessageText: {
-        color: consts.midnightBlue,
+        color: consts.deepGreen,
     },
     aiMessageText: {
-        color: consts.white,
+        color: consts.offWhite,
     },
     messageTime: {
         position: 'absolute',
-        right: 12,
-        bottom: 4,
+        right: 10,
+        bottom: 8,
+        color: consts.richGray,
         fontSize: 12,
-        opacity: 0.7,
     },
     chatInputContainer: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 32,
+        alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#e2e8f0',
-        backgroundColor: consts.white,
+        borderTopColor: consts.lightGray,
+        paddingTop: 8,
+        paddingBottom: 16,
     },
     chatInput: {
         flex: 1,
-        backgroundColor: '#f8fafc',
+        backgroundColor: consts.lightestGray,
         borderRadius: 20,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        marginRight: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        marginRight: 8,
+        color: consts.richGray,
         fontSize: 16,
-        maxHeight: 100,
     },
     sendButton: {
         backgroundColor: consts.deepGreen,
         borderRadius: 20,
-        padding: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        minWidth: 44,
-        minHeight: 44,
     },
     sendButtonDisabled: {
-        backgroundColor: '#cbd5e1',
+        backgroundColor: consts.gray,
     },
 });
 

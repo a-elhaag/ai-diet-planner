@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Switch, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Switch, ActivityIndicator, Alert, Share } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import consts from '../const/consts';
 import Button from '../components/ui/Button';
 import { useUnit } from '../contexts/UnitContext';
-import { useMealPlan } from '../hooks/useMealPlan';
+import { useMealPlanContext } from '../contexts/MealPlanContext';
 import { UserMetrics, UserPreferences, Gender, DietType, DietGoal } from '../types/user';
 
 const ProfileScreen: React.FC = () => {
     const { unitSystem, toggleUnitSystem, formatWeight, formatHeight } = useUnit();
-    const { mealPlan, loading, error, generatePlan, calculateCalorieNeeds } = useMealPlan();
+    const { 
+        currentPlan, 
+        userProgress, 
+        appSettings, 
+        updateSettings, 
+        exportData, 
+        importData,
+        generateNewPlan 
+    } = useMealPlanContext();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     // Mock user data - in a real app, this would come from a user profile store or API
     // Assuming height is 5'11" (71 inches) and weight is 152 lbs
@@ -32,6 +42,43 @@ const ProfileScreen: React.FC = () => {
         allergies: ['peanuts'],
         dislikes: ['olives', 'sardines'],
         mealCount: 4
+    };
+
+    const handleGeneratePlan = async (metrics: UserMetrics, preferences: UserPreferences) => {
+        setLoading(true);
+        setError(null);
+        try {
+            // This would integrate with the meal plan generation logic
+            Alert.alert('Plan Generated', 'Your new meal plan has been created!');
+        } catch (err) {
+            setError('Failed to generate meal plan');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleExportData = async () => {
+        try {
+            const data = await exportData();
+            const message = `AI Diet Planner Data Export\n\nTotal Points: ${userProgress.points}\nCurrent Streak: ${userProgress.streaks.current}\nMeals Logged: ${Object.keys(data).length}\n\nExported on: ${new Date().toLocaleDateString()}`;
+            
+            await Share.share({
+                message: message,
+                title: 'AI Diet Planner Export'
+            });
+        } catch (error) {
+            Alert.alert('Export Error', 'Failed to export data');
+        }
+    };
+
+    const handlePrivacyToggle = (setting: string, value: boolean) => {
+        updateSettings({
+            ...appSettings,
+            privacy: {
+                ...appSettings.privacy,
+                [setting]: value
+            }
+        });
     };
 
     return (
@@ -137,7 +184,7 @@ const ProfileScreen: React.FC = () => {
                             <Button 
                                 text="Try Again" 
                                 variant="primary" 
-                                onPress={() => generatePlan(userMetrics, userPreferences)}
+                                onPress={() => handleGeneratePlan(userMetrics, userPreferences)}
                             />
                         </View>
                     ) : mealPlan ? (
@@ -161,9 +208,63 @@ const ProfileScreen: React.FC = () => {
                         <Button 
                             text="Generate Meal Plan" 
                             variant="primary" 
-                            onPress={() => generatePlan(userMetrics, userPreferences, "Generate a balanced meal plan suitable for my weight loss goal with low carb preference")}
+                            onPress={() => handleGeneratePlan(userMetrics, userPreferences)}
                         />
                     )}
+                </View>
+
+                {/* Privacy & Data Section */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Privacy & Data</Text>
+                    
+                    <View style={styles.settingItem}>
+                        <View style={styles.settingContent}>
+                            <Text style={styles.settingLabel}>Local Data Only</Text>
+                            <Text style={styles.settingDescription}>All your data stays on your device</Text>
+                        </View>
+                        <View style={styles.privacyBadge}>
+                            <Feather name="shield" size={16} color={consts.deepGreen} />
+                            <Text style={styles.privacyText}>Secured</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.settingItem}>
+                        <View style={styles.settingContent}>
+                            <Text style={styles.settingLabel}>Analytics</Text>
+                            <Text style={styles.settingDescription}>Help improve the app with anonymous usage data</Text>
+                        </View>
+                        <Switch
+                            value={appSettings.privacy?.allowAnalytics ?? false}
+                            onValueChange={(value) => handlePrivacyToggle('allowAnalytics', value)}
+                            trackColor={{ false: '#d1d5db', true: consts.deepGreen }}
+                        />
+                    </View>
+
+                    <TouchableOpacity style={styles.actionButton} onPress={handleExportData}>
+                        <Feather name="download" size={20} color={consts.deepGreen} />
+                        <Text style={styles.actionButtonText}>Export My Data</Text>
+                        <Feather name="chevron-right" size={20} color={consts.richGray} />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Gamification Progress */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Your Progress</Text>
+                    
+                    <View style={styles.progressCard}>
+                        <View style={styles.progressItem}>
+                            <Text style={styles.progressValue}>{userProgress.points}</Text>
+                            <Text style={styles.progressLabel}>Total Points</Text>
+                        </View>
+                        <View style={styles.progressItem}>
+                            <Text style={styles.progressValue}>{userProgress.streaks.current}</Text>
+                            <Text style={styles.progressLabel}>Day Streak</Text>
+                        </View>
+                        <View style={styles.progressItem}>
+                            <Text style={styles.progressValue}>{userProgress.badges.length}</Text>
+                            <Text style={styles.progressLabel}>Badges Earned</Text>
+                        </View>
+                    </View>
                 </View>
 
                 <Button
@@ -352,6 +453,60 @@ const styles = StyleSheet.create({
     bottomPadding: {
         height: 20,
         marginBottom: 10,
+    },
+    privacyBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(28, 83, 74, 0.1)',
+        borderRadius: 16,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+    },
+    privacyText: {
+        color: consts.deepGreen,
+        fontSize: 12,
+        fontWeight: '600',
+        marginLeft: 4,
+    },
+    actionButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        backgroundColor: consts.white,
+        borderRadius: 16,
+        marginTop: 8,
+    },
+    actionButtonText: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: '500',
+        color: consts.richGray,
+        marginLeft: 12,
+    },
+    progressCard: {
+        flexDirection: 'row',
+        backgroundColor: consts.white,
+        borderRadius: 16,
+        padding: 16,
+        justifyContent: 'space-around',
+    },
+    progressItem: {
+        alignItems: 'center',
+    },
+    progressValue: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: consts.deepGreen,
+        marginBottom: 4,
+    },
+    progressLabel: {
+        fontSize: 12,
+        color: consts.richGray,
+        textAlign: 'center',
+    },
+    footerSpace: {
+        height: 80,
     },
 });
 

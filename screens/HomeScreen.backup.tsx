@@ -29,7 +29,7 @@ const HomeScreen: React.FC = () => {
     const [showQuickAdd, setShowQuickAdd] = useState(false);
     const [quickMealForm, setQuickMealForm] = useState({
         name: '',
-        category: 'breakfast' as 'breakfast' | 'lunch' | 'dinner' | 'snack',
+        category: 'breakfast' as const,
         calories: ''
     });
     
@@ -320,14 +320,14 @@ const HomeScreen: React.FC = () => {
                 <Text style={styles.gamificationTitle}>Progress & Rewards</Text>
                 <View style={styles.pointsBadge}>
                     <Feather name="star" size={16} color={consts.white} />
-                    <Text style={styles.pointsText}>{userProgress.points}</Text>
+                    <Text style={styles.pointsText}>{userProgress.totalPoints}</Text>
                 </View>
             </View>
             
             <View style={styles.gamificationContent}>
                 <View style={styles.streakContainer}>
                     <Feather name="zap" size={20} color={consts.blueGrotto} />
-                    <Text style={styles.streakText}>{userProgress.streaks.current} day streak!</Text>
+                    <Text style={styles.streakText}>{userProgress.currentStreak} day streak!</Text>
                 </View>
                 
                 <View style={styles.badgesContainer}>
@@ -335,8 +335,8 @@ const HomeScreen: React.FC = () => {
                     <View style={styles.badgesList}>
                         {userProgress.badges.slice(-3).map((badge, index) => (
                             <View key={index} style={styles.badgeItem}>
-                                <Text style={styles.badgeEmoji}>🏆</Text>
-                                <Text style={styles.badgeName}>{badge}</Text>
+                                <Text style={styles.badgeEmoji}>{badge.icon}</Text>
+                                <Text style={styles.badgeName}>{badge.name}</Text>
                             </View>
                         ))}
                         {userProgress.badges.length === 0 && (
@@ -417,8 +417,6 @@ const HomeScreen: React.FC = () => {
             </View>
         </Modal>
     );
-
-    const renderTip = () => (
         <Animated.View
             style={[
                 styles.tipCard,
@@ -484,6 +482,8 @@ const HomeScreen: React.FC = () => {
                     )}
                 </Animated.View>
 
+                {renderTip()}
+
                 <View style={styles.buttonsContainer}>
                     <Button
                         title={selectedTab === 'meals' ? "View Stats" : "View Meals"}
@@ -501,8 +501,6 @@ const HomeScreen: React.FC = () => {
 
                 <View style={{ height: 100 }} />
             </ScrollView>
-            
-            {renderQuickAddModal()}
         </View>
     );
 };
@@ -671,88 +669,6 @@ const styles = StyleSheet.create({
     waterGlassFilled: {
         backgroundColor: consts.blueGrotto,
     },
-    gamificationCard: {
-        backgroundColor: consts.white,
-        borderRadius: 28,
-        padding: 16,
-        marginVertical: 12,
-        shadowColor: consts.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 2,
-    },
-    gamificationHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    gamificationTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: consts.midnightBlue,
-    },
-    pointsBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: consts.blueGrotto,
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-    },
-    pointsText: {
-        color: consts.white,
-        fontWeight: '600',
-        marginLeft: 4,
-    },
-    gamificationContent: {
-        gap: 12,
-    },
-    streakContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    streakText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: consts.midnightBlue,
-        marginLeft: 8,
-    },
-    badgesContainer: {},
-    badgesLabel: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: consts.richGray,
-        marginBottom: 8,
-    },
-    badgesList: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-    },
-    badgeItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#f8fafc',
-        borderRadius: 16,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-    },
-    badgeEmoji: {
-        fontSize: 16,
-        marginRight: 6,
-    },
-    badgeName: {
-        fontSize: 12,
-        fontWeight: '500',
-        color: consts.richGray,
-    },
-    noBadgesText: {
-        fontSize: 14,
-        color: '#666',
-        fontStyle: 'italic',
-    },
     tipCard: {
         backgroundColor: consts.white,
         borderRadius: 28,
@@ -782,7 +698,7 @@ const styles = StyleSheet.create({
     },
     buttonsContainer: {
         marginTop: 16,
-        marginBottom: 15,
+        marginBottom: 15, // Increased from 80 to ensure content doesn't overlap with navbar
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -805,72 +721,6 @@ const styles = StyleSheet.create({
         color: consts.midnightBlue,
         marginBottom: 16,
         textAlign: 'center',
-    },
-    // Modal styles
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    modalContent: {
-        backgroundColor: consts.white,
-        borderRadius: 28,
-        padding: 24,
-        width: '100%',
-        maxWidth: 400,
-    },
-    modalHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: '600',
-        color: consts.midnightBlue,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        borderRadius: 16,
-        padding: 16,
-        fontSize: 16,
-        marginBottom: 16,
-        backgroundColor: '#f8fafc',
-    },
-    categoryContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 16,
-    },
-    categoryButton: {
-        flex: 1,
-        paddingVertical: 12,
-        paddingHorizontal: 8,
-        borderRadius: 16,
-        backgroundColor: '#f1f5f9',
-        marginHorizontal: 4,
-        alignItems: 'center',
-    },
-    categoryButtonActive: {
-        backgroundColor: consts.blueGrotto,
-    },
-    categoryButtonText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: consts.richGray,
-    },
-    categoryButtonTextActive: {
-        color: consts.white,
-    },
-    modalActions: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 12,
-        marginTop: 8,
     },
 });
 

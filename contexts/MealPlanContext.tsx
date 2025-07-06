@@ -5,18 +5,107 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Define the maximum number of meal plans to store in history
 const MAX_HISTORY_SIZE = 3;
 
-// Define the context value interface
+// Enhanced interfaces for new features
+interface QuickMeal {
+  id: string;
+  name: string;
+  category: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  calories: number;
+  timestamp: string;
+  photo?: string;
+}
+
+interface UserProgress {
+  points: number;
+  badges: string[];
+  streaks: {
+    current: number;
+    longest: number;
+    lastLogDate: string;
+  };
+  challenges: {
+    id: string;
+    name: string;
+    progress: number;
+    target: number;
+    completed: boolean;
+  }[];
+}
+
+interface DailyTracking {
+  date: string;
+  hydration: {
+    glasses: number;
+    target: number;
+  };
+  activity: {
+    steps: number;
+    minutes: number;
+    target: number;
+  };
+  mealsLogged: QuickMeal[];
+  mood?: 'great' | 'good' | 'okay' | 'poor';
+}
+
+interface AppSettings {
+  notifications: {
+    enabled: boolean;
+    mealReminders: boolean;
+    hydrationReminders: boolean;
+    motivationalMessages: boolean;
+    times: {
+      breakfast: string;
+      lunch: string;
+      dinner: string;
+      hydration: string[];
+    };
+  };
+  privacy: {
+    dataStaysLocal: boolean;
+    allowAnalytics: boolean;
+  };
+  preferences: {
+    theme: 'light' | 'dark' | 'auto';
+    units: 'metric' | 'imperial';
+    language: string;
+  };
+}
+
+// Define the enhanced context value interface
 interface MealPlanContextType {
   // Current active meal plan
   currentPlan: MealPlan | null;
   // List of previous meal plans (limited to MAX_HISTORY_SIZE)
   planHistory: MealPlan[];
-  // Set a new meal plan as current and add current to history
+  // User progress and gamification
+  userProgress: UserProgress;
+  // Daily tracking data
+  dailyTracking: DailyTracking;
+  // App settings
+  appSettings: AppSettings;
+  // Quick meal logging
+  quickMeals: QuickMeal[];
+  // Recipe suggestions and grocery list
+  recipeHistory: string[];
+  groceryList: string[];
+  
+  // Original functions
   setNewMealPlan: (plan: MealPlan) => void;
-  // Get a specific meal plan from history by index
   getMealPlanFromHistory: (index: number) => MealPlan | null;
-  // Clear all meal plans
   clearAllMealPlans: () => void;
+  
+  // New functions for enhanced features
+  logQuickMeal: (meal: Omit<QuickMeal, 'id' | 'timestamp'>) => void;
+  updateHydration: (glasses: number) => void;
+  updateActivity: (steps: number, minutes: number) => void;
+  addPoints: (points: number) => void;
+  unlockBadge: (badgeId: string) => void;
+  updateStreak: () => void;
+  addToGroceryList: (items: string[]) => void;
+  removeFromGroceryList: (item: string) => void;
+  updateSettings: (settings: Partial<AppSettings>) => void;
+  exportData: () => Promise<string>;
+  importData: (data: string) => Promise<void>;
 }
 
 // Create the context
@@ -25,18 +114,90 @@ const MealPlanContext = createContext<MealPlanContextType | undefined>(undefined
 // Storage keys
 const STORAGE_KEYS = {
   CURRENT_PLAN: 'ai_diet_planner_current_plan',
-  PLAN_HISTORY: 'ai_diet_planner_plan_history'
+  PLAN_HISTORY: 'ai_diet_planner_plan_history',
+  USER_PROGRESS: 'ai_diet_planner_user_progress',
+  DAILY_TRACKING: 'ai_diet_planner_daily_tracking',
+  APP_SETTINGS: 'ai_diet_planner_app_settings',
+  QUICK_MEALS: 'ai_diet_planner_quick_meals',
+  RECIPE_HISTORY: 'ai_diet_planner_recipe_history',
+  GROCERY_LIST: 'ai_diet_planner_grocery_list',
+};
+
+// Default values for new features
+const defaultUserProgress: UserProgress = {
+  points: 0,
+  badges: [],
+  streaks: {
+    current: 0,
+    longest: 0,
+    lastLogDate: '',
+  },
+  challenges: [
+    {
+      id: 'daily_log',
+      name: 'Log meals for 7 days',
+      progress: 0,
+      target: 7,
+      completed: false,
+    },
+    {
+      id: 'hydration_goal',
+      name: 'Drink 8 glasses of water',
+      progress: 0,
+      target: 8,
+      completed: false,
+    },
+  ],
+};
+
+const defaultDailyTracking: DailyTracking = {
+  date: new Date().toISOString().split('T')[0],
+  hydration: { glasses: 0, target: 8 },
+  activity: { steps: 0, minutes: 0, target: 10000 },
+  mealsLogged: [],
+};
+
+const defaultAppSettings: AppSettings = {
+  notifications: {
+    enabled: true,
+    mealReminders: true,
+    hydrationReminders: true,
+    motivationalMessages: true,
+    times: {
+      breakfast: '08:00',
+      lunch: '12:00',
+      dinner: '18:00',
+      hydration: ['10:00', '14:00', '16:00', '20:00'],
+    },
+  },
+  privacy: {
+    dataStaysLocal: true,
+    allowAnalytics: false,
+  },
+  preferences: {
+    theme: 'light',
+    units: 'metric',
+    language: 'en',
+  },
 };
 
 // Provider component
 export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // State for current meal plan and history
+  // Existing state
   const [currentPlan, setCurrentPlan] = useState<MealPlan | null>(null);
   const [planHistory, setPlanHistory] = useState<MealPlan[]>([]);
+  
+  // New state for enhanced features
+  const [userProgress, setUserProgress] = useState<UserProgress>(defaultUserProgress);
+  const [dailyTracking, setDailyTracking] = useState<DailyTracking>(defaultDailyTracking);
+  const [appSettings, setAppSettings] = useState<AppSettings>(defaultAppSettings);
+  const [quickMeals, setQuickMeals] = useState<QuickMeal[]>([]);
+  const [recipeHistory, setRecipeHistory] = useState<string[]>([]);
+  const [groceryList, setGroceryList] = useState<string[]>([]);
 
-  // Load meal plans from AsyncStorage on component mount
+  // Load all data from AsyncStorage on component mount
   useEffect(() => {
-    const loadMealPlans = async () => {
+    const loadAllData = async () => {
       try {
         // Load current plan
         const storedCurrentPlan = await AsyncStorage.getItem(STORAGE_KEYS.CURRENT_PLAN);
@@ -49,82 +210,126 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (storedHistory) {
           setPlanHistory(JSON.parse(storedHistory));
         }
+
+        // Load user progress
+        const storedProgress = await AsyncStorage.getItem(STORAGE_KEYS.USER_PROGRESS);
+        if (storedProgress) {
+          setUserProgress(JSON.parse(storedProgress));
+        }
+
+        // Load daily tracking
+        const storedTracking = await AsyncStorage.getItem(STORAGE_KEYS.DAILY_TRACKING);
+        if (storedTracking) {
+          const tracking = JSON.parse(storedTracking);
+          // Reset daily tracking if it's a new day
+          const today = new Date().toISOString().split('T')[0];
+          if (tracking.date !== today) {
+            setDailyTracking({ ...defaultDailyTracking, date: today });
+          } else {
+            setDailyTracking(tracking);
+          }
+        }
+
+        // Load app settings
+        const storedSettings = await AsyncStorage.getItem(STORAGE_KEYS.APP_SETTINGS);
+        if (storedSettings) {
+          setAppSettings({ ...defaultAppSettings, ...JSON.parse(storedSettings) });
+        }
+
+        // Load quick meals
+        const storedQuickMeals = await AsyncStorage.getItem(STORAGE_KEYS.QUICK_MEALS);
+        if (storedQuickMeals) {
+          setQuickMeals(JSON.parse(storedQuickMeals));
+        }
+
+        // Load recipe history
+        const storedRecipes = await AsyncStorage.getItem(STORAGE_KEYS.RECIPE_HISTORY);
+        if (storedRecipes) {
+          setRecipeHistory(JSON.parse(storedRecipes));
+        }
+
+        // Load grocery list
+        const storedGrocery = await AsyncStorage.getItem(STORAGE_KEYS.GROCERY_LIST);
+        if (storedGrocery) {
+          setGroceryList(JSON.parse(storedGrocery));
+        }
       } catch (error) {
-        console.error('Error loading meal plans from storage:', error);
+        console.error('Error loading data from storage:', error);
       }
     };
 
-    loadMealPlans();
+    loadAllData();
   }, []);
 
-  // Save current plan to AsyncStorage whenever it changes
-  useEffect(() => {
-    const saveCurrentPlan = async () => {
-      if (currentPlan) {
-        try {
-          await AsyncStorage.setItem(
-            STORAGE_KEYS.CURRENT_PLAN,
-            JSON.stringify(currentPlan)
-          );
-        } catch (error) {
-          console.error('Error saving current meal plan:', error);
-        }
-      }
-    };
+  // Save functions for each data type
+  const saveToStorage = async (key: string, data: any) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Error saving ${key}:`, error);
+    }
+  };
 
-    saveCurrentPlan();
+  // Auto-save effects
+  useEffect(() => {
+    if (currentPlan) saveToStorage(STORAGE_KEYS.CURRENT_PLAN, currentPlan);
   }, [currentPlan]);
 
-  // Save plan history to AsyncStorage whenever it changes
   useEffect(() => {
-    const savePlanHistory = async () => {
-      try {
-        await AsyncStorage.setItem(
-          STORAGE_KEYS.PLAN_HISTORY,
-          JSON.stringify(planHistory)
-        );
-      } catch (error) {
-        console.error('Error saving meal plan history:', error);
-      }
-    };
-
-    savePlanHistory();
+    saveToStorage(STORAGE_KEYS.PLAN_HISTORY, planHistory);
   }, [planHistory]);
 
-  // Set a new meal plan, moving the current plan to history
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.USER_PROGRESS, userProgress);
+  }, [userProgress]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.DAILY_TRACKING, dailyTracking);
+  }, [dailyTracking]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.APP_SETTINGS, appSettings);
+  }, [appSettings]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.QUICK_MEALS, quickMeals);
+  }, [quickMeals]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.RECIPE_HISTORY, recipeHistory);
+  }, [recipeHistory]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.GROCERY_LIST, groceryList);
+  }, [groceryList]);
+
+  // Original meal plan functions
   const setNewMealPlan = (plan: MealPlan) => {
-    // First, if there's a current plan, add it to history
     if (currentPlan) {
-      // Add timestamp if not present
       const planWithTimestamp = {
         ...currentPlan,
         timestamp: currentPlan.timestamp || new Date().toISOString()
       };
-
-      // Add to history and limit size
       setPlanHistory(prevHistory => {
         const newHistory = [planWithTimestamp, ...prevHistory];
         return newHistory.slice(0, MAX_HISTORY_SIZE);
       });
     }
-
-    // Set new plan as current with timestamp
     setCurrentPlan({
       ...plan,
       timestamp: plan.timestamp || new Date().toISOString()
     });
+    // Award points for creating a meal plan
+    addPoints(10);
   };
 
-  // Get a meal plan from history by index
   const getMealPlanFromHistory = (index: number): MealPlan | null => {
     return planHistory[index] || null;
   };
 
-  // Clear all meal plans
   const clearAllMealPlans = async () => {
     setCurrentPlan(null);
     setPlanHistory([]);
-    
     try {
       await AsyncStorage.removeItem(STORAGE_KEYS.CURRENT_PLAN);
       await AsyncStorage.removeItem(STORAGE_KEYS.PLAN_HISTORY);
@@ -133,12 +338,165 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
+  // New feature functions
+  const logQuickMeal = (meal: Omit<QuickMeal, 'id' | 'timestamp'>) => {
+    const newMeal: QuickMeal = {
+      ...meal,
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+    };
+    
+    setQuickMeals(prev => [newMeal, ...prev]);
+    setDailyTracking(prev => ({
+      ...prev,
+      mealsLogged: [...prev.mealsLogged, newMeal],
+    }));
+    
+    // Award points and update streak
+    addPoints(5);
+    updateStreak();
+  };
+
+  const updateHydration = (glasses: number) => {
+    setDailyTracking(prev => ({
+      ...prev,
+      hydration: { ...prev.hydration, glasses },
+    }));
+    
+    // Award points for reaching hydration goal
+    if (glasses >= dailyTracking.hydration.target) {
+      addPoints(5);
+      unlockBadge('hydration_hero');
+    }
+  };
+
+  const updateActivity = (steps: number, minutes: number) => {
+    setDailyTracking(prev => ({
+      ...prev,
+      activity: { ...prev.activity, steps, minutes },
+    }));
+    
+    // Award points for reaching activity goal
+    if (steps >= dailyTracking.activity.target) {
+      addPoints(10);
+      unlockBadge('step_master');
+    }
+  };
+
+  const addPoints = (points: number) => {
+    setUserProgress(prev => ({
+      ...prev,
+      points: prev.points + points,
+    }));
+  };
+
+  const unlockBadge = (badgeId: string) => {
+    setUserProgress(prev => {
+      if (!prev.badges.includes(badgeId)) {
+        return {
+          ...prev,
+          badges: [...prev.badges, badgeId],
+          points: prev.points + 20, // Bonus points for badges
+        };
+      }
+      return prev;
+    });
+  };
+
+  const updateStreak = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    setUserProgress(prev => {
+      let newCurrent = prev.streaks.current;
+      
+      if (prev.streaks.lastLogDate === yesterday) {
+        newCurrent += 1;
+      } else if (prev.streaks.lastLogDate !== today) {
+        newCurrent = 1;
+      }
+      
+      return {
+        ...prev,
+        streaks: {
+          current: newCurrent,
+          longest: Math.max(newCurrent, prev.streaks.longest),
+          lastLogDate: today,
+        },
+      };
+    });
+  };
+
+  const addToGroceryList = (items: string[]) => {
+    setGroceryList(prev => [...new Set([...prev, ...items])]);
+  };
+
+  const removeFromGroceryList = (item: string) => {
+    setGroceryList(prev => prev.filter(i => i !== item));
+  };
+
+  const updateSettings = (settings: Partial<AppSettings>) => {
+    setAppSettings(prev => ({ ...prev, ...settings }));
+  };
+
+  const exportData = async (): Promise<string> => {
+    const data = {
+      currentPlan,
+      planHistory,
+      userProgress,
+      dailyTracking,
+      appSettings,
+      quickMeals,
+      recipeHistory,
+      groceryList,
+      exportDate: new Date().toISOString(),
+    };
+    return JSON.stringify(data);
+  };
+
+  const importData = async (dataString: string): Promise<void> => {
+    try {
+      const data = JSON.parse(dataString);
+      if (data.currentPlan) setCurrentPlan(data.currentPlan);
+      if (data.planHistory) setPlanHistory(data.planHistory);
+      if (data.userProgress) setUserProgress(data.userProgress);
+      if (data.dailyTracking) setDailyTracking(data.dailyTracking);
+      if (data.appSettings) setAppSettings(data.appSettings);
+      if (data.quickMeals) setQuickMeals(data.quickMeals);
+      if (data.recipeHistory) setRecipeHistory(data.recipeHistory);
+      if (data.groceryList) setGroceryList(data.groceryList);
+    } catch (error) {
+      throw new Error('Invalid data format for import');
+    }
+  };
+
   const value = {
+    // Original data
     currentPlan,
     planHistory,
+    // New data
+    userProgress,
+    dailyTracking,
+    appSettings,
+    quickMeals,
+    recipeHistory,
+    groceryList,
+    // Original functions
     setNewMealPlan,
     getMealPlanFromHistory,
-    clearAllMealPlans
+    clearAllMealPlans,
+    // New functions
+    logQuickMeal,
+    updateHydration,
+    updateActivity,
+    addPoints,
+    unlockBadge,
+    updateStreak,
+    addToGroceryList,
+    removeFromGroceryList,
+    updateSettings,
+    exportData,
+    importData,
   };
 
   return <MealPlanContext.Provider value={value}>{children}</MealPlanContext.Provider>;
