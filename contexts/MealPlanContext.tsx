@@ -106,6 +106,7 @@ interface MealPlanContextType {
   updateSettings: (settings: Partial<AppSettings>) => void;
   exportData: () => Promise<string>;
   importData: (data: string) => Promise<void>;
+  generateNewPlan: (metrics: any, preferences: any, prompt?: string) => Promise<void>;
 }
 
 // Create the context
@@ -439,8 +440,22 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
     setAppSettings(prev => ({ ...prev, ...settings }));
   };
 
+  // Generate new meal plan function (integrates with the service)
+  const generateNewPlan = async (metrics: any, preferences: any, prompt?: string) => {
+    try {
+      // Import the service dynamically to avoid circular dependencies
+      const { generateMealPlanWithFallback } = await import('../services/mealPlanService');
+      const newPlan = await generateMealPlanWithFallback(metrics, preferences, prompt || 'Generate a balanced meal plan');
+      setNewMealPlan(newPlan);
+    } catch (error) {
+      console.error('Error generating new plan:', error);
+      throw error;
+    }
+  };
+
+  // Export data function
   const exportData = async (): Promise<string> => {
-    const data = {
+    const exportObject = {
       currentPlan,
       planHistory,
       userProgress,
@@ -451,9 +466,10 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
       groceryList,
       exportDate: new Date().toISOString(),
     };
-    return JSON.stringify(data);
+    return JSON.stringify(exportObject, null, 2);
   };
 
+  // Import data function
   const importData = async (dataString: string): Promise<void> => {
     try {
       const data = JSON.parse(dataString);
@@ -497,6 +513,7 @@ export const MealPlanProvider: React.FC<{ children: ReactNode }> = ({ children }
     updateSettings,
     exportData,
     importData,
+    generateNewPlan,
   };
 
   return <MealPlanContext.Provider value={value}>{children}</MealPlanContext.Provider>;

@@ -48,10 +48,11 @@ const ProfileScreen: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            // This would integrate with the meal plan generation logic
-            Alert.alert('Plan Generated', 'Your new meal plan has been created!');
+            await generateNewPlan(metrics, preferences, "Generate a balanced meal plan suitable for my goals and preferences");
+            Alert.alert('Success!', 'Your new meal plan has been created!');
         } catch (err) {
-            setError('Failed to generate meal plan');
+            setError('Failed to generate meal plan. Please try again.');
+            console.error('Plan generation error:', err);
         } finally {
             setLoading(false);
         }
@@ -180,23 +181,23 @@ const ProfileScreen: React.FC = () => {
                         </View>
                     ) : error ? (
                         <View style={styles.errorContainer}>
-                            <Text style={styles.errorText}>Error: {error.message}</Text>
+                            <Text style={styles.errorText}>Error: {error}</Text>
                             <Button 
                                 text="Try Again" 
                                 variant="primary" 
                                 onPress={() => handleGeneratePlan(userMetrics, userPreferences)}
                             />
                         </View>
-                    ) : mealPlan ? (
+                    ) : currentPlan ? (
                         <View style={styles.mealPlanPreview}>
                             <Text style={styles.previewTitle}>Your Meal Plan is Ready!</Text>
                             <Text style={styles.previewDetail}>
-                                Total calories: {mealPlan.dailyTotals.calories} kcal
+                                Total calories: {currentPlan.dailyTotals?.calories || 0} kcal
                             </Text>
                             <Text style={styles.previewDetail}>
-                                Protein: {mealPlan.dailyTotals.protein}g | 
-                                Carbs: {mealPlan.dailyTotals.carbohydrates}g | 
-                                Fats: {mealPlan.dailyTotals.fats}g
+                                Protein: {currentPlan.dailyTotals?.protein || 0}g | 
+                                Carbs: {currentPlan.dailyTotals?.carbohydrates || 0}g | 
+                                Fats: {currentPlan.dailyTotals?.fats || 0}g
                             </Text>
                             <Button 
                                 text="View Full Meal Plan" 
@@ -507,6 +508,26 @@ const styles = StyleSheet.create({
     },
     footerSpace: {
         height: 80,
+    },
+    settingItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    settingContent: {
+        flex: 1,
+    },
+    settingLabel: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: consts.richGray,
+        marginBottom: 2,
+    },
+    settingDescription: {
+        fontSize: 14,
+        color: '#666',
     },
 });
 
